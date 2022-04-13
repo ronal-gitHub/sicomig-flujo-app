@@ -13,6 +13,6 @@ module.exports = (sequelize, DataTypes) => {
     lugar_emi: DataTypes.STRING,
     estado: DataTypes.STRING,
     observacion: DataTypes.STRING
-  }, {});
+  }, {schema: 'dgm_scg_test',});
   return inf_tramite;
 };

@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('Users', {
     username: DataTypes.STRING,
     password: DataTypes.STRING
-  }, {});
+  }, {schema: 'dgm_scg_test',});
   User.beforeSave((user, options) => {
     if (user.changed('password')) {
       user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
