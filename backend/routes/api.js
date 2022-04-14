@@ -4,13 +4,13 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const router = express.Router();
 // require('../config/passport')(passport);
-const Product = require('../models').Products;
+// rbc const Product = require('../models').Products; //rbc se cambio por tramites
 const User = require('../models').Users;
 const DetailDB = require('../models').inf_tramites;
 
 router.post('/signup', function (req, res) {
     if (!req.body.username || !req.body.password) {
-        res.status(400).send({ msg: 'Please pass username and password.' })
+        res.status(400).send({ msg: 'Por favor introdusca usuario y password.' })
     } else {
         User
             .create({
@@ -36,7 +36,7 @@ router.post('/signin', function (req, res) {
         .then((user) => {
             if (!user) {
                 return res.status(401).send({
-                    message: 'Authentication failed. User not found.',
+                    message: 'Autenticacion fallo. El usuario no existe',
                 });
             }
             user.comparePassword(req.body.password, (err, isMatch) => {
@@ -47,13 +47,13 @@ router.post('/signin', function (req, res) {
                     })
                     res.json({ success: true, token: 'JWT ' + token, email: req.body.username });
                 } else {
-                    res.status(401).send({ success: false, msg: 'Authentication failed. Wrong password.' });
+                    res.status(401).send({ success: false, msg:  'Autenticacion fallo. Password incorrrecto' });
                 }
             })
         })
         .catch((error) => res.status(400).send(error));
 });
-
+// Endpoint Consulta flujos migratorios desde la tabla inf_tramite
 router.get('/flujo', function (req, res) {
     console.log("=======");
     console.log(req.url);
@@ -63,8 +63,8 @@ router.get('/flujo', function (req, res) {
     // if (token) {
         DetailDB
             .findAll()
-            .then((products) => {
-                const temp = products.filter(item => item.serie.toLowerCase().includes(req.query.nDocSerie.toString().toLowerCase())
+            .then((tramites) => { // rbc era prods
+                const temp = tramites.filter(item => item.serie.toLowerCase().includes(req.query.nDocSerie.toString().toLowerCase())
                     && (item.nombres_apellidos.toString().toLowerCase().includes(req.query.nombres.toString().toLowerCase()) && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
                     && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fecha.toString())
                 );
