@@ -6,7 +6,7 @@ const router = express.Router();
 // require('../config/passport')(passport);
 // rbc const Product = require('../models').Products; //rbc se cambio por tramites
 const User = require('../models').Users;
-const DetailDB = require('../models').inf_tramites;
+const DetailDB = require('../models').inf_tramite;
 
 router.post('/signup', function (req, res) {
     if (!req.body.username || !req.body.password) {
@@ -71,7 +71,7 @@ router.get('/flujo', function (req, res) {
                 if(req.query.updatedAt == 'TODOS')
                     res.status(200).send(temp);
                 else
-                    res.status(200).send(temp.filter(item => req.query.updatedAt.toString().includes(item.updatedAt.getFullYear().toString())));
+                    res.status(200).send(temp.filter(item => req.query.updatedAt.toString().includes(item.fecha_reg.getFullYear().toString())));
             })
             .catch((error) => { res.status(400).send(error); });
     // } else {
@@ -81,7 +81,7 @@ router.get('/flujo', function (req, res) {
 
 router.post('/create', function (req, res) {
     const ini_details = {
-        tipo_bus: req.body.tipo_bus,
+        par_tramite: req.body.par_tramite,
         nombres_apellidos: req.body.nombres_apellidos,
         fecha_nac: new Date(req.body.fecha_nac),
         numero_doc: parseInt(req.body.numero_doc),
@@ -110,7 +110,7 @@ router.post('/create', function (req, res) {
 router.post('/update', function (req, res) {
 
     const ini_details = {
-        tipo_bus: req.body.tipo_bus,
+        par_tramite: req.body.par_tramite,
         nombres_apellidos: req.body.nombres_apellidos,
         fecha_nac: req.body.fecha_nac,
         numero_doc: req.body.numero_doc,

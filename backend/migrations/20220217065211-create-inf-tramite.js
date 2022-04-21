@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('inf_tramites', {
+    await queryInterface.createTable('inf_tramite', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -81,6 +81,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('inf_tramites');
+    await queryInterface.dropTable('inf_tramite');
   }
 };

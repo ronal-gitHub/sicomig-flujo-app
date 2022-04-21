@@ -4,7 +4,17 @@
     "password": "123",
     "database": "postgres",
     "host": "172.31.2.22",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "define": {
+      "id":false,
+      "freezeTableName": true,
+           "timestamps": false,
+"logging": false,   
+"underscored": true,
+"operatorsAliases": false 
+
+    }
+     
   },
   "test": {
     "username": "postgres",
