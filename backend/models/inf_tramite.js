@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     id_tramite: {
       type: DataTypes.INTEGER,
       primaryKey: true
-  },
+    },
     par_tramite: DataTypes.STRING,
     nombres_apellidos: DataTypes.STRING,
     fecha_nac: DataTypes.DATE,
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     fecha_reg: DataTypes.DATE
   },
    {schema: 'dgm_scg_test',
-      tableName: 'inf_tramite',
+    tableName: 'inf_tramite',
     
 
 });

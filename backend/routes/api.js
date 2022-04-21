@@ -58,20 +58,21 @@ router.get('/flujo', function (req, res) {
     console.log("=======");
     console.log(req.url);
     console.log("=======");
-    console.log(req.headers);
+    console.log(req.query.nroDoc);
     // var token = getToken(req.headers);
     // if (token) {
         DetailDB
             .findAll()
             .then((tramites) => { // rbc era prods
-                const temp = tramites.filter(item => item.serie.toLowerCase().includes(req.query.nDocSerie.toString().toLowerCase())
-                    && (item.nombres_apellidos.toString().toLowerCase().includes(req.query.nombres.toString().toLowerCase()) && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
-                    && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fecha.toString())
+                const temp = tramites.filter(item =>  item.numero_doc.toString().includes(req.query.nroDoc.toString())
+                    && (item.nombres_apellidos.toString().toLowerCase().includes(req.query.nombres.toString().toLowerCase()) 
+                    && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
+                    && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fechaNac.toString())
                 );
-                if(req.query.updatedAt == 'TODOS')
+                if(req.query.fechaReg == 'TODOS')
                     res.status(200).send(temp);
                 else
-                    res.status(200).send(temp.filter(item => req.query.updatedAt.toString().includes(item.fecha_reg.getFullYear().toString())));
+                    res.status(200).send(temp.filter(item => req.query.fechaReg.toString().includes(item.fecha_reg.getFullYear().toString())));
             })
             .catch((error) => { res.status(400).send(error); });
     // } else {

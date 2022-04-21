@@ -568,11 +568,11 @@ export default {
 
       json: {
         head: [
-                "ID", "TIPO BUSQUEDA", "NOMBRES Y APELLIDOS","FECHA DE NACIMIENTO",
+                "ID", "PAR TRAMITE", "NOMBRES Y APELLIDOS","FECHA DE NACIMIENTO",
                 "NÚMERO DE DOCUMENTO", "TIPO DOCUMENTO", "PAÍS NACIONALIDAD",
                 "NÚMERO DE SERIE", "FECHA EMISIÓN", "FECHA VENCIMIENTO",
                 "LUGAR EMISIÓN", "ESTADO", "OBSERVACIÓN",
-                "CREATEDAT", "UPDATEDAT"
+                "CREATEDAT", "FECHA REG"
               ],
         fileName: "ReportData.xls"
       },
@@ -676,7 +676,7 @@ export default {
 
     searchContent01: function (val) {
       this.searchedProducts = this.products.filter(product => {
-        if(val.filter(item => product.tipo_bus == item).length)
+        if(val.filter(item => product.fechaNac == item).length)
           return true;
         return false;
       })
@@ -806,11 +806,11 @@ export default {
         .get("/flujo", 
         {
           params: {
-            updatedAt: this.gestion,
-            nDocSerie: this.searchGenContent01,
+            fechaReg: this.gestion,
+            nroDoc: this.searchGenContent01,
             nombres: this.searchGenContent02,
             apellidos: this.searchGenContent03,
-            fecha: this.searchGenContent04
+            fechaNac: this.searchGenContent04
           },
           headers: { Authorization: localStorage.token }
         })
@@ -823,7 +823,7 @@ export default {
     },
     createData() {
       this.reqData = {
-        tipo_bus: this.values01,
+        par_tramite: this.values01,
         nombres_apellidos: this.values02,
         fecha_nac: this.values03,
         numero_doc: this.values04,
@@ -899,11 +899,11 @@ export default {
     exportPDF() {
       var source =  this.$refs["article"];
         let rows = [];
-        let columnHeader = ['ID', 'TIPO BUSQUEDA', 'NOMBRES Y APELLIDOS', 'FECHA DE NACIMIENTO', 'NUMERO DE DOCUMENTO', 'TIPO DOCUMENTO', 'PAIS NACIONALIDAD', 'NUMERO DE SERIE', 'FECHA EMISION', 'FECHA VENCIMIENTO', 'LUGAR EMISION', 'ESTADO', 'OBSERVACION', 'CREATEDAT', 'UPDATEDAT'];
+        let columnHeader = ['ID', 'PAR TRAMITE', 'NOMBRES Y APELLIDOS', 'FECHA DE NACIMIENTO', 'NUMERO DE DOCUMENTO', 'TIPO DOCUMENTO', 'PAIS NACIONALIDAD', 'NUMERO DE SERIE', 'FECHA EMISION', 'FECHA VENCIMIENTO', 'LUGAR EMISION', 'ESTADO', 'OBSERVACION', 'CREATEDAT', 'FECHA REG'];
         let pdfName = 'Schedule';
         source.data.forEach(element => {
             var temp = [
-                element.id,
+                element.id_tramite,
                 element.tipo_bus,
                 element.nombres_apellidos,
                 this.isDate(element.fecha_nac),
@@ -917,7 +917,7 @@ export default {
                 element.estado,
                 element.observacion,
                 this.isDateTime(element.createdAt),
-                this.isDateTime(element.updatedAt),
+                this.isDateTime(element.fecha_Reg),
             ];
             rows.push(temp);
         });

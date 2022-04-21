@@ -8,8 +8,8 @@
     "define": {
       "id":false,
       "freezeTableName": true,
-           "timestamps": false,
-"logging": false,   
+      "timestamps": false,
+"logging": true,   
 "underscored": true,
 "operatorsAliases": false 
 
