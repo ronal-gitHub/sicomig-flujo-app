@@ -22,5 +22,5 @@ module.exports = (sequelize, DataTypes) => {
     serie: DataTypes.STRING,
   }, {});
   
-  return Product;
+  return Product; // nuevo repo
 };
