@@ -1054,7 +1054,7 @@ export default {
       this.options11 = [];
       this.options12 = [];
       this.searchedProducts.map(product => {
-        this.options01.push(product.tipo_bus);
+        this.options01.push(product.par_tramite);
         this.options02.push(product.nombres_apellidos);
         this.options03.push(moment(product.fecha_nac).format("DD/MM/YYYY").toString());
         this.options04.push(product.numero_doc.toString());
