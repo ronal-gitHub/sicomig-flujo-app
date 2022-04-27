@@ -65,6 +65,9 @@
         <div class="row mt-2">
           <div class="flex xs12 md12 lg3" style="text-align: start;">
             <va-button style="background-color: #105544;">PASAPORTE</va-button>
+            <va-button icon="entypo entypo-search" @click="result1()">RESULT1</va-button>
+            <va-button icon="entypo entypo-search" @click="result2()">RESULT2</va-button>
+            <va-button icon="entypo entypo-search" @click="result3()">RESULT3</va-button>
           </div>
           <div class="flex xs12 md12 lg9" style="text-align: end;">
             <va-button icon="entypo entypo-user" @click="addModal = true"> AÑADIR NUEVO</va-button>
@@ -541,6 +544,7 @@ export default {
       api_key: config.api_key,
 
       products: [],
+      resultProducts: [],
       searchedProducts: [],
       reqData: [],
       reqDel: [],
@@ -815,8 +819,7 @@ export default {
           headers: { Authorization: localStorage.token }
         })
         .then((response) => {
-          this.products = response.data;
-          this.searchedProducts = this.products;
+          this.resultProducts = response.data;
           this.loading = false;
         })
         .catch((error) => {this.loading = false;})
@@ -889,6 +892,18 @@ export default {
           )
           this.getData();
         })
+    },
+    result1() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "23");
+      this.searchedProducts = this.products;
+    },
+    result2() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "24");
+      this.searchedProducts = this.products;
+    },
+    result3() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "25");
+      this.searchedProducts = this.products;
     },
     exportExcel() {
       console.log(this.json);
