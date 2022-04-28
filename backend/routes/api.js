@@ -7,9 +7,8 @@ const router = express.Router();
 // rbc const Product = require('../models').Products; //rbc se cambio por tramites
 const User = require('../models').Users;
 const DetailDB = require('../models').inf_tramite;
-const DetailDB2 = require('../models').sync_log;
-
-const Sequelize = require('sequelize'); 
+//const DetailDB2 = require('../models').sync_log;
+//onst Sequelize = require('sequelize'); 
 
 
 
@@ -60,27 +59,6 @@ router.post('/signin', function (req, res) {
 });
 
 
-const axios = require('axios');
-// Want to use async/await? Add the `async` keyword to your outer function/method.
-const getUsers = async () =>  {
-          
-        try {
-            return await axios.get('https://dummyjson.com/users?skip=5&limit=1')
-          } catch (error) {
-            console.error(error)
-          }
-        }
-
-
-const countBreeds = async () => {
-            const breeds = await getUsers()
-         //   console.log(JSON.stringify(breeds.data)); 
-            if (breeds.data) {
-              console.log(`Got ${Object.entries(breeds.data).length} breeds`)
-            }
-          }
-
-
 // Endpoint Consulta flujos migratorios desde la tabla inf_tramite
 router.get('/flujo', function (req, res) {
     console.log("=======");
@@ -89,97 +67,9 @@ router.get('/flujo', function (req, res) {
    // console.log(req.query.nroDoc);
     // var token = getToken(req.headers);
     // if (token) {
-        var ini_details_x=[];
-        let temp2 ='';
-      //    console.log(JSON.stringify(breeds.data)); //console.log(response);
-     // console.log( getUser());  //  console.log(response.data.created_at);
-     const response =  axios.get('https://jsonplaceholder.typicode.com/todos/1') // https://dummyjson.com/users?skip=5&limit=1  https://jsonplaceholder.typicode.com/todos
-     .then(function (response) {
-        //  temp2 = response.data;
-        //  console.log( temp2);  
-    
-            const ini_details = {
-                par_tramite: req.body.par_tramite,
-                nombres_apellidos: response.data.title,
-                fecha_nac: new Date(),
-                numero_doc: parseInt(response.data.userId),
-                tipo_doc: req.body.tipo_doc,
-                pais_nac: req.body.pais_nac,
-                serie: req.body.serie,
-                fecha_emi: new Date(req.body.fecha_emi),
-                fecha_ven: new Date(req.body.fecha_ven),
-                lugar_emi: req.body.lugar_emi,
-                estado: req.body.estado,
-                observacion: "https://jsonplaceholder.typicode.com/todos/1"
-            };
-            console.log("<<<<<<");
-            console.log(ini_details);
-            // var token = getToken(req.headers);
-            // if (token) {
-               DetailDB2
-              //    .create(ini_details)
-                 // .catch((error) => res.status(400).send(error));
-
-/*
-        DetailDB2
-            .findAll()
-            .then((sync_log) => { 
-                var temp2 = sync_log.filter(item =>  item.numero_doc.toString().includes(req.query.nroDoc.toString())
-                            && (item.nombres_apellidos.toString().toLowerCase().includes(req.query.nombres.toString().toLowerCase()) 
-                            && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
-                            && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fechaNac.toString())
-                );
-            })   */
-    //  console.log(JSON.stringify( temp2)); 
-      console.log(temp2);
-
-     // .catch((error) => { res.status(400).send(error); });
       
       DetailDB
-            .findAll({
-               /* attributes: {
-                    include: [
-                        [
-                            Sequelize.literal(" WITH inf_tram_conbinado AS" +
-                                "(  select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "        , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                    "    from inf_tramite inf"+
-                                    "   WHERE  (numero_doc like '%1%'  or    nombres_apellidos like '%r%') and   extract(year from fecha_reg) = 2018"+
-                                    " UNION   "+
-                                    " select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "     , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                    " from inf_tramite inf "+
-                                    " WHERE  (nombres like '%C%'  AND    apellidos like '%%')   and   extract(year from fecha_reg) = 2021"+
-                                    " UNION   "+
-                                    " select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "      , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                    " from inf_tramite inf "+
-                                    " WHERE  (numero_doc like '%%'  AND    nombres_apellidos like '%%')  and   extract(year from fecha_reg) = 2022"+
-                                    " UNION   "+
-                                    " select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "     , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                    " from inf_tramite inf"+
-                                " WHERE  (numero_doc like '%%'  AND   to_char(fecha_nac,'DD/MM/YYYY')  = '1976' )  and   extract(year from fecha_reg) = 2020"+
-                                "    UNION   "+
-                                "select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "     , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                    "from inf_tramite inf"+
-                                " WHERE  (nombres_apellidos like '%%'  AND    to_char(fecha_nac,'DD/MM/YYYY')  = '1976' )  and   extract(year from fecha_reg) = 2020"+
-                                "    UNION   "+
-                                " select numero_doc ,nombres_apellidos,nombres,   apellidos, fecha_nac"+
-                                    "      , par_tramite, id_tramite, serie, pais_nac , tipo_doc,  fecha_exp, fecha_emi, lugar_emision, estado, observacion"+
-                                " from inf_tramite inf"+
-                                "  WHERE  (apellidos like '%%'  AND   to_char(fecha_nac,'DD/MM/YYYY')  = '1976' )  and   extract(year from fecha_reg) = 2020 "+
-                                ")"+
-                                "SELECT * FROM inf_tram_conbinado  ORDER BY numero_doc DESC"
-            )
-                 
-                        ]
-                    ]
-                },
-                order: [
-                   
-                ]*/
+            .findAll({             
             })
             .then((tramites) => { // rbc era prods
                 var temp = tramites.filter(item =>  item.numero_doc.toString().includes(req.query.nroDoc.toString())
@@ -198,7 +88,7 @@ router.get('/flujo', function (req, res) {
     // } else {
     //     return res.status(403).send({ success: false, msg: 'Unauthorized.' });
     // }
-  });
+ // });
 });
 
 router.post('/create', function (req, res) {
