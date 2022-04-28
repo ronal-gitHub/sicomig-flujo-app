@@ -893,7 +893,7 @@ export default {
           this.getData();
         })
     },
-    result1() {
+    result1() { // para mostrar los tabs
       this.products = this.resultProducts.filter(item => item.par_tramite == "23");
       this.searchedProducts = this.products;
     },
