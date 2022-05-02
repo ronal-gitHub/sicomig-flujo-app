@@ -1,13 +1,7 @@
 <template>
   <div class="auth-layout row align-content--center">
-    <div class="flex xs12 pa-3 flex-center">
-      <router-link class="py-5 flex-center" to="/">
-        <va-icon name="va-icon fa fa-group" style="font-size: 50px;" />
-      </router-link>
-    </div>
-
-    <div class="flex xs12">
-      <div class="d-flex justify--center">
+    <div class="flex xs12 mt-5">
+      <div class="d-flex justify--center align-items--center">
         <va-card class="auth-layout__card">
           <va-tabs
             v-model="tabIndex"
@@ -19,10 +13,16 @@
 
           <va-separator/>
 
-          <div class="pa-3">
+          <div class="loginForm pa-3">
             <router-view/>
           </div>
+
+          <router-link class="py-2 flex-center" to="/">
+            <va-icon name="va-icon fa fa-group" style="font-size: 50px;" />
+          </router-link>
+
         </va-card>
+        <img src="/img/portal-digemig.png" width="28%">
       </div>
     </div>
   </div>
@@ -64,7 +64,7 @@ export default {
   background-image: linear-gradient(#fdfeff, #b9dbdb);
 
   &__card {
-    width: 100%;
+    width: 23%;
     max-width: 600px;
   }
 
@@ -74,4 +74,9 @@ export default {
     }
   }
 }
+
+.loginForm {
+  margin-top: 10%;
+}
+
 </style>

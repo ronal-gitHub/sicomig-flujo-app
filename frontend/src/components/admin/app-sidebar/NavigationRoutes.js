@@ -6,7 +6,7 @@ export const navigationRoutes = {
   routes: [
     {
       name: 'page01',
-      displayName: 'Dashboard',
+      displayName: 'Busqueda',
       meta: {
         iconClass: 'va-icon entypo entypo-users',
       },

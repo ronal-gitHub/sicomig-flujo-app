@@ -64,15 +64,15 @@
       <va-card class="fill-height" style="overflow-x: auto;">
         <div class="row mt-2">
           <div class="flex xs12 md12 lg3" style="text-align: start;">
-            <va-button style="background-color: #105544;">PASAPORTE</va-button>
-            <va-button icon="entypo entypo-search" @click="result1()">RESULT1</va-button>
-            <va-button icon="entypo entypo-search" @click="result2()">RESULT2</va-button>
-            <va-button icon="entypo entypo-search" @click="result3()">RESULT3</va-button>
+            <va-button style="background-color: #105544;">FLUJO</va-button>
+            <va-button icon="entypo entypo-search" @click="result1()">PASAPORTE</va-button>
+            <va-button icon="entypo entypo-search" @click="result2()">SAL.OBLIGATORIA</va-button>
+            <va-button icon="entypo entypo-search" @click="result3()">TRASPASO</va-button>
           </div>
           <div class="flex xs12 md12 lg9" style="text-align: end;">
             <va-button icon="entypo entypo-user" @click="addModal = true"> AÑADIR NUEVO</va-button>
-            <va-button icon="fa fa-download" @click="exportExcel()"> EXPORT EXCEL</va-button>
-            <va-button icon="fa fa-download" @click="exportPDF()"> EXPORT PDF</va-button>
+            <va-button icon="fa fa-download" @click="exportExcel()"> EXPORTA EXCEL</va-button>
+            <va-button icon="fa fa-download" @click="exportPDF()"> EXPORTA PDF</va-button>
           </div>
         </div>
         <div class="flex xs12 mt-3">

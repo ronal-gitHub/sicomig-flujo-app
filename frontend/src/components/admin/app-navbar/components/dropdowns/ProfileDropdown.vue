@@ -16,7 +16,7 @@
       />
     </span>
     <div class="profile-dropdown__content pl-4 pr-4 pt-2 pb-2">
-      <span @click="logout">Log out</span>
+      <span @click="logout">Salir</span>
     </div>
   </va-dropdown>
 </template>

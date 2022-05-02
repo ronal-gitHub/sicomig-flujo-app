@@ -1,23 +1,48 @@
 <template>
   <form @submit.prevent="onsubmit">
+    <label>Nombre de Usuario *</label>
     <va-input
+      class="py-2"
       v-model="username"
       type="text"
-      :label="$t('email')"
       :error="!!usernameErrors.length"
       :error-messages="usernameErrors"
     />
-
+    <label>Contraseña *</label>
     <va-input
+      v-if="showPassword"
+      class="py-2"
       v-model="password"
       type="password"
-      :label="$t('auth.password')"
       :error="!!passwordErrors.length"
       :error-messages="passwordErrors"
-    />
+    >
+      <va-icon
+        slot="append"
+        name="va-icon ion ion-ios-eye"
+        @click.native="handleShowPassword()"
+        style="font-size: 20px;"
+      />
+    </va-input>
 
-    <div class="d-flex justify--center mt-3">
-      <va-button type="submit" class="my-0">{{ $t('auth.login') }}</va-button>
+    <va-input
+      v-if="!showPassword"
+      class="py-2"
+      v-model="password"
+      type="text"
+      :error="!!passwordErrors.length"
+      :error-messages="passwordErrors"
+    >
+      <va-icon
+        slot="append"
+        name="va-icon ion ion-ios-eye-off"
+        @click.native="handleShowPassword()"
+        style="font-size: 20px;"
+      />
+    </va-input>
+
+    <div class="py-2 d-flex justify--center mt-3">
+      <va-button type="submit" class="my-0" style="width: 100%;">{{ $t('auth.login') }}</va-button>
     </div>
   </form>
 </template>
@@ -35,6 +60,7 @@ export default {
       keepLoggedIn: false,
       usernameErrors: [],
       passwordErrors: [],
+      showPassword: true,
     }
   },
   computed: {
@@ -46,6 +72,9 @@ export default {
     this.check_token()
   },
   methods: {
+    handleShowPassword () {
+      this.showPassword = !this.showPassword;
+    },
     onsubmit () {
       this.usernameErrors = this.username ? [] : ['Username is required']
       this.passwordErrors = this.password ? [] : ['Password is required']
