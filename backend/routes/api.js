@@ -1,3 +1,6 @@
+const sequelize = require('sequelize');
+const axios = require('axios');
+
 const express = require('express');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
@@ -60,7 +63,7 @@ router.post('/signin', function (req, res) {
 
 
 // Endpoint Consulta flujos migratorios desde la tabla inf_tramite
-router.get('/flujo', function (req, res) {
+router.get('/flujoXX', function (req, res) {
     console.log("=======");
     console.log(req.url);
     console.log("=======");
@@ -77,20 +80,126 @@ router.get('/flujo', function (req, res) {
                     && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
                     && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fechaNac.toString())
                 );
-                                  
+                    console.log( JSON.stringify(tramites));     //
+     //   console.log(tramites);                   
              
-                if(req.query.fechaReg == 'TODOS')
+                if(req.query.gestionReg == 'TODOS')
                     res.status(200).send(temp);
                 else
                     res.status(200).send(temp.filter(item => req.query.fechaReg.toString().includes(item.fecha_reg.getFullYear().toString())));
             })
-            .catch((error) => { res.status(400).send(error); });
+            .catch((error) => {
+                 res.status(400).send(error);
+              });
     // } else {
     //     return res.status(403).send({ success: false, msg: 'Unauthorized.' });
     // }
  // });
 });
 
+
+router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
+  try { //  The variable that received the HTTP data had to use the await keyword to ensure the asynchronous data was received before continuing
+
+        //    wsExternos(); // llamda a ws wxternos
+     
+      // Use raw SQL queries to select all rows which belongs to the tramite_inf
+      //console.log(req.query.nroDoc);
+      console.log(req.url);  // [results, metadata]
+   
+      const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
+"     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
+"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+"       FROM dgm_scg_test.inf_tramite inf  "+
+"          WHERE ( numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), 'x') || '%' OR nombres_apellidos iLIKE  	 "+
+"         '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), 'x') || '%' ) AND Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  "+
+"           AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') ) 	 "+
+"       UNION   "+
+"           SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc, 	 "+
+"       fecha_exp, fecha_emi, lugar_emision, estado, observacion   "+
+"         FROM dgm_scg_test.inf_tramite inf WHERE  nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), 'x') || '%' 	 "+
+"       AND apellidos   iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'    "+
+"         AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
+"       AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
+"         UNION 	 "+
+"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
+"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+"      FROM dgm_scg_test.inf_tramite inf WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), 'x') || '%'   "+
+"          AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)	 "+
+"      AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
+"         UNION 	 "+
+"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
+"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+"      FROM dgm_scg_test.inf_tramite inf WHERE  nombres_apellidos  iLIKE '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), 'x') || '%'    "+
+"          AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
+"       AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
+"         UNION 	 "+
+"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
+"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+"       FROM dgm_scg_test.inf_tramite inf WHERE  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'    "+
+"            AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
+"        AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )  "+
+"           )  "+
+"    SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,fecha_exp, "+ 
+"    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   "	
+,          
+          {
+              replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
+                ,nombres:  req.query.nombres, apellidos: req.query.apellidos  
+                ,fecha_nac:  req.query.fechaNac , gestion_reg:  req.query.gestionReg               
+            },
+              type: DetailDB.sequelize.QueryTypes.SELECT
+          });  // bind: {status}
+
+ 
+       console.log("===***====");
+     //  console.log( JSON.stringify(results));     //
+        console.log(results);
+       return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
+    //    const numero_doc = results.map(elm => elm.numero_doc);
+      // const resultsMap = new Map();
+     //  results.forEach(message => resultsMap.set(results.numero_doc, message));
+
+      /*this.body = messages.map(function(user) {
+       const obj = user.toJSON();
+       obj.recentMessage = messagesMap.get(obj.id);
+       return obj;*/
+
+     }catch (error) {
+        console.log("===2====");
+       console.log((res.json({error:error.message})));
+       
+        return res.json({error:error.message});
+      }
+
+    });
+
+    const wsExternos = async () => {
+        try {
+            const [response1, response2] = await axios.all([
+              axios.get('https://jsonplaceholder.typicode.com/users'),  // llamda ws INTERPOL
+              axios.get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=2020-03-17') //  llamda ws min publico
+            ]); 
+            const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
+          //  console.log('Status Code:', response1.status);
+            //console.log('Date in Response header:', headerDate);
+        
+            const persons = response1.data;      
+          /* for(person of persons) {
+              console.log(`Persons id: ${person.id}, name: ${person.name}`);
+            }*/
+    
+          //  console.log(response2.data.url);
+         //   console.log(response2.data.explanation);
+        // console.log(persons);
+         return persons; 
+          } catch (error) {
+              console.log("====1===");
+             // console.log('Error: ', error.message);
+          }
+        };
+    //    https://exerror.com/unhandledpromiserejectionwarning-this-error-originated-either-by-throwing-inside-of-an-async-function-without-a-catch-block/
+    
 router.post('/create', function (req, res) {
     const ini_details = {
         par_tramite: req.body.par_tramite,
