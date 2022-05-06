@@ -45,7 +45,7 @@
         </va-input>
         <div class="mb-4">
           <a href="/default" class="link mr-4" @click.prevent style="color: #76c566;">
-            Servicio Ministerio Publico ACTIVO
+            Servicio Ministerio Publico INACTIVO
           </a>
         </div>
         <div class="flex xs12 mt-3">
@@ -63,17 +63,26 @@
     <div class="flex xs11 lg12" style="padding-left: 10px;">
       <va-card class="fill-height" style="overflow-x: auto;">
         <div class="row mt-2">
-          <div class="flex xs12 md12 lg3" style="text-align: start;">
-            <va-button style="background-color: #105544;">FLUJO</va-button>
-            <va-button icon="entypo entypo-search" @click="result1()">PASAPORTE</va-button>
-            <va-button icon="entypo entypo-search" @click="result2()">SAL.OBLIGATORIA</va-button>
-            <va-button icon="entypo entypo-search" @click="result3()">TRASPASO</va-button>
-          </div>
-          <div class="flex xs12 md12 lg9" style="text-align: end;">
-            <va-button icon="entypo entypo-user" @click="addModal = true"> AÑADIR NUEVO</va-button>
+           <div class="flex xs12 md12 lg12" style="text-align: end;">
+           
             <va-button icon="fa fa-download" @click="exportExcel()"> EXPORTA EXCEL</va-button>
             <va-button icon="fa fa-download" @click="exportPDF()"> EXPORTA PDF</va-button>
           </div>
+          <div class="flex xs12 md12 lg12" style="text-align: justify;">
+          
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 1).length > 0 ? true:false" icon="entypo entypo-search" @click="result1()" style="background-color: #f03a24;">FLUJO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 2).length > 0 ? true:false" icon="entypo entypo-search" @click="result2()" style="background-color: #f03a24;">PERMANENCIA</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 4).length > 0 ? true:false" icon="entypo entypo-search" @click="result4()" style="background-color: #f03a24;">VISA</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 5).length > 0 ? true:false" icon="entypo entypo-search" @click="result5()" style="background-color: #f03a24;">TRASPASO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 6).length > 0 ? true:false" icon="entypo entypo-search" @click="result6()" style="background-color: #f03a24;">IMPEDIMENTO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 7).length > 0 ? true:false" icon="entypo entypo-search" @click="result7()" style="background-color: #f03a24;">PASAPORTE</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 14).length > 0 ? true:false" icon="entypo entypo-search" @click="result14()" style="background-color: #f03a24;">SALIDA OBL.</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 20).length > 0 ? true:false" icon="entypo entypo-search" @click="result20()" style="background-color: #f03a24;">ALERTA</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 21).length > 0 ? true:false" icon="entypo entypo-search" @click="result21()" style="background-color: #f03a24;">MIN.PUBLICO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 23).length > 0 ? true:false" icon="entypo entypo-search" @click="result23()" style="background-color: #f03a24;">INTERPOL</va-button>
+             
+          </div>
+       
         </div>
         <div class="flex xs12 mt-3">
           <div class="row align--center">
@@ -245,11 +254,7 @@
               {{ props.rowData.observacion }}
             </template>
 
-            <template slot="actions" slot-scope="props">
-              <va-button outline small color="danger" icon="ion-md-close ion" class="ma-0" @click="remove(props.rowData)">
-                {{ $t('DELETE') }}
-              </va-button>
-            </template>
+       
           </va-data-table>
         </div>
         <va-modal
@@ -500,7 +505,8 @@ export default {
       addModal: false,
       verifyModal: false,
       invalidModal: false,
-      
+      isHidden: false,
+
       searchContent01: [],
       searchContent02: [],
       searchContent03: [],
@@ -895,15 +901,43 @@ export default {
         })
     },
     result1() { // para mostrar los tabs
-      this.products = this.resultProducts.filter(item => item.par_tramite == "23");
+      this.products = this.resultProducts.filter(item => item.par_tramite == "1");
       this.searchedProducts = this.products;
     },
     result2() {
-      this.products = this.resultProducts.filter(item => item.par_tramite == "24");
+      this.products = this.resultProducts.filter(item => item.par_tramite == "2");
       this.searchedProducts = this.products;
     },
-    result3() {
-      this.products = this.resultProducts.filter(item => item.par_tramite == "25");
+    result4() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "4");
+      this.searchedProducts = this.products;
+    },
+      result5() { // para mostrar los tabs
+      this.products = this.resultProducts.filter(item => item.par_tramite == "5");
+      this.searchedProducts = this.products;
+    },
+    result6() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "6");
+      this.searchedProducts = this.products;
+    },
+    result7() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "7");
+      this.searchedProducts = this.products;
+    },
+      result14() { // para mostrar los tabs
+      this.products = this.resultProducts.filter(item => item.par_tramite == "14");
+      this.searchedProducts = this.products;
+    },
+    result20() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "20");
+      this.searchedProducts = this.products;
+    },
+    result21() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "21");
+      this.searchedProducts = this.products;
+    },
+      result23() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "23");
       this.searchedProducts = this.products;
     },
     exportExcel() {
