@@ -101,48 +101,40 @@ router.get('/flujoXX', function (req, res) {
 router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
   try { //  The variable that received the HTTP data had to use the await keyword to ensure the asynchronous data was received before continuing
 
-        //    wsExternos(); // llamda a ws wxternos
+            wsExternos(); // llamda a ws wxternos ej INTERPOL
      
       // Use raw SQL queries to select all rows which belongs to the tramite_inf
       //console.log(req.query.nroDoc);
       console.log(req.url);  // [results, metadata]
    
       const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
-"     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
-"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
-"       FROM dgm_scg_test.inf_tramite inf  "+
-"          WHERE ( numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), 'x') || '%' OR nombres_apellidos iLIKE  	 "+
-"         '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), 'x') || '%' ) AND Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  "+
-"           AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') ) 	 "+
-"       UNION   "+
-"           SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc, 	 "+
-"       fecha_exp, fecha_emi, lugar_emision, estado, observacion   "+
-"         FROM dgm_scg_test.inf_tramite inf WHERE  nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), 'x') || '%' 	 "+
-"       AND apellidos   iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'    "+
-"         AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
-"       AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
-"         UNION 	 "+
-"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
-"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
-"      FROM dgm_scg_test.inf_tramite inf WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), 'x') || '%'   "+
-"          AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)	 "+
-"      AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
-"         UNION 	 "+
-"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
-"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
-"      FROM dgm_scg_test.inf_tramite inf WHERE  nombres_apellidos  iLIKE '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), 'x') || '%'    "+
-"          AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
-"       AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )   "+
-"         UNION 	 "+
-"        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
-"         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
-"       FROM dgm_scg_test.inf_tramite inf WHERE  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'    "+
-"            AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) 	 "+
-"        AND   To_char(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), To_char(fecha_nac, 'DD/MM/YYYY') )  "+
-"           )  "+
-"    SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,fecha_exp, "+ 
-"    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   "	
-,          
+            "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
+            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+            "       FROM dgm_scg_test.inf_tramite inf  "+
+            "                WHERE ( numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%' 	 "+
+            "AND (nombres_apellidos iLIKE  '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), nombres_apellidos) || '%' ) 	 "+
+            "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), apellidos) || '%' ) 	 "+
+            "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
+            "AND Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  	 "+
+            "       UNION   "+
+            "           SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc, 	 "+
+            "       fecha_exp, fecha_emi, lugar_emision, estado, observacion   "+
+            "         FROM dgm_scg_test.inf_tramite inf 	 "+
+            "WHERE numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+          
+            "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), 'x') || '%'  AND apellidos   iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
+            "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
+            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)           "+
+            "         UNION 	 "+
+            "        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
+            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+            "       FROM dgm_scg_test.inf_tramite inf   "+
+            "         WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+    
+            "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
+            "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') )	 "+
+            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  "+
+            "           )  "+
+            "    SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,fecha_exp, "+ 
+            "    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   ",         
           {
               replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
                 ,nombres:  req.query.nombres, apellidos: req.query.apellidos  
@@ -154,7 +146,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
  
        console.log("===***====");
      //  console.log( JSON.stringify(results));     //
-        console.log(results);
+       // console.log(results);
        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
     //    const numero_doc = results.map(elm => elm.numero_doc);
       // const resultsMap = new Map();
@@ -174,28 +166,114 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
 
     });
 
-    const wsExternos = async () => {
+    const wsExternos = async (param1,param2) => {
+        var respBodyMinPub= [];
+        var jsons = new Array();
+  
         try {
             const [response1, response2] = await axios.all([
-              axios.get('https://jsonplaceholder.typicode.com/users'),  // llamda ws INTERPOL
-              axios.get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=2020-03-17') //  llamda ws min publico
+              axios.get('https://jsonplaceholder.typicode.com/users/1'),  // llamda ws INTERPOL
+              axios.get('https://jsonplaceholder.typicode.com/usersxxx/2') //  
             ]); 
-            const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
-          //  console.log('Status Code:', response1.status);
-            //console.log('Date in Response header:', headerDate);
-        
-            const persons = response1.data;      
-          /* for(person of persons) {
-              console.log(`Persons id: ${person.id}, name: ${person.name}`);
-            }*/
-    
-          //  console.log(response2.data.url);
-         //   console.log(response2.data.explanation);
-        // console.log(persons);
-         return persons; 
+            // const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
+             //  console.log(response2.data.url); //console.log('Date in Response header:', headerDate);
+            // if (response1.status != '200') return {};
+         
+             console.log('Status Code:', response1.status); //            console.log( JSON.stringify(response1)); 
+                    
+           let obj1 = response1.data;  //JSON.parse(response1);
+           let obj2 = response2.data; //JSON.parse(response2);
+         
+        //  console.log(typeof response1.data) ;    
+             
+           // var jsons = new Array();
+            jsons.push(obj1);
+            jsons.push(obj2);
+     
+            console.log("===1111====");
+           // console.log(jsons);
+            respBodyMinPub = jsons; 
           } catch (error) {
-              console.log("====1===");
-             // console.log('Error: ', error.message);
+              
+              var today = new Date();
+              var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+              var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+              var dateTime = date+' '+time;
+              
+              console.log("====1.0===");
+              var code =  error.response.status;
+              var errorKey = "801-NOT_FOUND_INTERPOL:";
+              var message = "Error. El WS se encuentra Fuera de Línea. "+ error.message;
+              var path = "https://jsonplaceholder.typicode.com/users";
+              
+              respBodyMinPub = {
+                "code": code,
+                "errorKey": errorKey,
+                "message": message,
+                "path": path,
+                "submitTime": dateTime
+               }
+              respBodyMinPub = JSON.stringify(respBodyMinPub); // JSON.parse(jsons);
+               console.log(respBodyMinPub);
+          }
+        
+          // desde aqui min pub
+          try {
+          
+            const [response3, response4] = await axios.all([
+                axios.get('https://jsonplaceholder.typicode.com/users/3'),  // 
+                axios.get('https://jsonplaceholder.typicode.com/userxxs/4') //  llamda ws min publico
+              ]); 
+                              
+           let obj3 = response3.data;  
+           let obj4 = response4.data;        
+        //  console.log(typeof response1.data) ;    
+                       
+            jsons.push(obj3);
+            jsons.push(obj4);
+     
+            console.log("====22===");
+            //console.log(jsons);
+         return jsons; 
+          } catch (error) {
+           
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
+
+             
+              var code =  error.response.status;
+              var errorKey = "803-NOT_FOUND_MIN_PUB";
+              var message = "Error. El WS se encuentra Fuera de Línea. "+error.message;
+              var path = "https://jsonplaceholder.typicode.com/users";
+             
+              var respBodyInterpol = {
+                "code": code,
+                "errorKey": errorKey,
+                "message": message,
+                "path": path,
+                "submitTime": dateTime
+                } 
+                console.log("====2.1===");
+                console.log(typeof respBodyMinPub) ;  
+              //  respBodyInterpol = JSON.stringify(respBodyInterpol);
+              //  console.log(respBodyInterpol);
+              console.log(typeof jsons) ; 
+               jsons.push(respBodyMinPub);
+                jsons.push(respBodyInterpol);
+
+            /*  console.log('"code": ', error.response.status);
+              console.log('"errorKey": ', '"902-MIN_PUBLICO"');
+              console.log('"message": ', "Error. El WS se encuentra Fuera de Línea. "+error.message);
+               console.log('"path": '+ '"https://jsonplaceholder.typicode.com/users"');
+               console.log('"submitTime": '+ '" ' + dateTime  + '"'  );*/
+             // console.log(jsons);
+              
+               console.log( jsons) ; 
+               console.log(JSON.stringify(jsons));  //               console.log(JSON.parse(jsons));
+              
+             return   jsons ;
           }
         };
     //    https://exerror.com/unhandledpromiserejectionwarning-this-error-originated-either-by-throwing-inside-of-an-async-function-without-a-catch-block/

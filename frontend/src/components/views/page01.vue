@@ -88,7 +88,7 @@
           <div class="row align--center">
             <div class="flex xs12 md2">
               <va-select
-                :label="$t('TIPO BUSQUEDA')"
+                :label="$t('MODULO')"
                 v-model="searchContent01"
                 multiple
                 :options="options01"
@@ -207,10 +207,10 @@
             thead-class="greenColor"
           >
             <template slot="Tipo Busqueda" slot-scope="props">
-              {{ props.rowData.tipo_bus }}
+              {{ props.rowData.par_tramite }}
             </template>
 
-            <template slot="Nombres Y Aplellidos" slot-scope="props">
+            <template slot="Nombres y Apellidos" slot-scope="props">
               {{ props.rowData.nombres_apellidos }}
             </template>
 
@@ -272,7 +272,7 @@
                 <div class="flex lg12">
                   <va-input
                     v-model="values01"
-                    label="TIP BUSQUEDA"
+                    label="MODULO"
                   >
                     <va-icon
                       slot="prepend"
@@ -595,11 +595,11 @@ export default {
       return [
         {
           name: "__slot:Tipo Busqueda",
-          title: "TIPO BUSQUEDA",
+          title: "MODULO",
           // width: "15%",
         },
         {
-          name: "__slot:Nombres Y Aplellidos",
+          name: "__slot:Nombres y Apellidos",
           title: "NOMBRES Y APELLIDOS",
           // width: "15%",
         },
