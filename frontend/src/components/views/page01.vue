@@ -1,4 +1,4 @@
-<template>
+<template if='rootElement && rootElement.prop'>
   <div>
     <div class="flex xs11 lg12" style="padding-left: 10px; margin-left: auto; margin-right: auto; margin-bottom: 20px; width: 40%;">
       <va-card class="fill-height" style="overflow-x: auto;">
@@ -44,9 +44,9 @@
           <va-icon name="fa fa-search" slot="prepend" />
         </va-input>
         <div class="mb-4">
-          <a href="/default" class="link mr-4" @click.prevent style="color: #76c566;">
-            Servicio Ministerio Publico INACTIVO
-          </a>
+          <va-notification style="margin-bottom: 20px;" v-show= "isHiddenMP">
+            {{ $t(' Servicio Ministerio Publico INACTIVO  ') }}
+          </va-notification>
         </div>
         <div class="flex xs12 mt-3">
           <div class="row align--center">
@@ -505,8 +505,8 @@ export default {
       addModal: false,
       verifyModal: false,
       invalidModal: false,
-      isHidden: false,
-
+      isHiddenMP: true,
+      isHiddenIP: false,
       searchContent01: [],
       searchContent02: [],
       searchContent03: [],
@@ -828,8 +828,13 @@ export default {
         .then((response) => {
           this.resultProducts = response.data;
           this.loading = false;
+          isHiddenMP =  response.data.errorKey;
+          console.log(isHiddenMP);
+            
         })
-        .catch((error) => {this.loading = false;})
+        .catch((error) => {
+          this.loading = false;
+          })
     },
     createData() {
       this.reqData = {

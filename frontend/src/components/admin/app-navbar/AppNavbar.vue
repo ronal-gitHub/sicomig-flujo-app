@@ -19,7 +19,9 @@
           :color="contextConfig.invertedColor ? $themes.gray : 'white'"
         />
 
-        <div class="display-3">PORTAL</div>
+        <div class="display-3">
+          <img src="/img/digemig-logo-corner.png" width="28%">
+        </div>        
       </div>
       <app-navbar-actions
         class="app-navbar__actions md5 lg4"

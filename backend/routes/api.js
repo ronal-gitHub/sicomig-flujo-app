@@ -101,7 +101,7 @@ router.get('/flujoXX', function (req, res) {
 router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
   try { //  The variable that received the HTTP data had to use the await keyword to ensure the asynchronous data was received before continuing
 
-            wsExternos(); // llamda a ws wxternos ej INTERPOL
+    const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
      
       // Use raw SQL queries to select all rows which belongs to the tramite_inf
       //console.log(req.query.nroDoc);
@@ -134,7 +134,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  "+
             "           )  "+
             "    SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,fecha_exp, "+ 
-            "    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   ",         
+            "    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   LIMIT 100  ",         
           {
               replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
                 ,nombres:  req.query.nombres, apellidos: req.query.apellidos  
@@ -143,11 +143,22 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
               type: DetailDB.sequelize.QueryTypes.SELECT
           });  // bind: {status}
 
- 
-       console.log("===***====");
-     //  console.log( JSON.stringify(results));     //
-       // console.log(results);
+          console.log("===**+**====");     
+         // console.log(typeof wsExterno) ; // object 
+         // console.log(wsExterno);
+          console.log(typeof results) ; 
+          console.log(results);
+        results.push(wsExterno);
+    
        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
+
+     }catch (error) {
+       console.log("===2====");
+       console.log((res.json({error:error.message})));
+       return res.json({error:error.message});
+      }
+
+    });
     //    const numero_doc = results.map(elm => elm.numero_doc);
       // const resultsMap = new Map();
      //  results.forEach(message => resultsMap.set(results.numero_doc, message));
@@ -157,42 +168,31 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
        obj.recentMessage = messagesMap.get(obj.id);
        return obj;*/
 
-     }catch (error) {
-        console.log("===2====");
-       console.log((res.json({error:error.message})));
-       
-        return res.json({error:error.message});
-      }
-
-    });
-
     const wsExternos = async (param1,param2) => {
-        var respBodyMinPub= [];
+        var respBodyMinPub= {};
+        var respBodyMinPub= {};
         var jsons = new Array();
   
         try {
             const [response1, response2] = await axios.all([
-              axios.get('https://jsonplaceholder.typicode.com/users/1'),  // llamda ws INTERPOL
-              axios.get('https://jsonplaceholder.typicode.com/usersxxx/2') //  
+              axios.get('https://jsonplaceholder.typicode.com/users/XXX1'),  // llamda ws INTERPOL
+              axios.get('https://jsonplaceholder.typicode.com/users/2') //  
             ]); 
             // const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
              //  console.log(response2.data.url); //console.log('Date in Response header:', headerDate);
             // if (response1.status != '200') return {};
          
-             console.log('Status Code:', response1.status); //            console.log( JSON.stringify(response1)); 
+           //  console.log('Status Code:', response1.status); //            console.log( JSON.stringify(response1)); 
                     
            let obj1 = response1.data;  //JSON.parse(response1);
-           let obj2 = response2.data; //JSON.parse(response2);
+           let obj2 = response2.data; //JSON.parse(response2);         
+        //  console.log(typeof response1.data) ;                
          
-        //  console.log(typeof response1.data) ;    
-             
-           // var jsons = new Array();
             jsons.push(obj1);
             jsons.push(obj2);
      
-            console.log("===1111====");
-           // console.log(jsons);
-            respBodyMinPub = jsons; 
+            console.log("===1.1====");     // console.log(jsons);
+         //  respBodyInterpol = jsons; 
           } catch (error) {
               
               var today = new Date();
@@ -200,84 +200,78 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
               var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
               var dateTime = date+' '+time;
               
-              console.log("====1.0===");
-              var code =  error.response.status;
+              console.log("====1.2===");
+              var code = error.response.status;
               var errorKey = "801-NOT_FOUND_INTERPOL:";
               var message = "Error. El WS se encuentra Fuera de Línea. "+ error.message;
               var path = "https://jsonplaceholder.typicode.com/users";
               
-              respBodyMinPub = {
-                "code": code,
-                "errorKey": errorKey,
-                "message": message,
-                "path": path,
-                "submitTime": dateTime
-               }
-              respBodyMinPub = JSON.stringify(respBodyMinPub); // JSON.parse(jsons);
-               console.log(respBodyMinPub);
-          }
-        
-          // desde aqui min pub
-          try {
-          
-            const [response3, response4] = await axios.all([
-                axios.get('https://jsonplaceholder.typicode.com/users/3'),  // 
-                axios.get('https://jsonplaceholder.typicode.com/userxxs/4') //  llamda ws min publico
-              ]); 
-                              
-           let obj3 = response3.data;  
-           let obj4 = response4.data;        
-        //  console.log(typeof response1.data) ;    
-                       
-            jsons.push(obj3);
-            jsons.push(obj4);
-     
-            console.log("====22===");
-            //console.log(jsons);
-         return jsons; 
-          } catch (error) {
-           
-            var today = new Date();
-            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            var dateTime = date+' '+time;
-
-             
-              var code =  error.response.status;
-              var errorKey = "803-NOT_FOUND_MIN_PUB";
-              var message = "Error. El WS se encuentra Fuera de Línea. "+error.message;
-              var path = "https://jsonplaceholder.typicode.com/users";
-             
-              var respBodyInterpol = {
+              respBodyInterpol = {
                 "code": code,
                 "errorKey": errorKey,
                 "message": message,
                 "path": path,
                 "submitTime": dateTime
                 } 
-                console.log("====2.1===");
-                console.log(typeof respBodyMinPub) ;  
-              //  respBodyInterpol = JSON.stringify(respBodyInterpol);
-              //  console.log(respBodyInterpol);
-              console.log(typeof jsons) ; 
-               jsons.push(respBodyMinPub);
-                jsons.push(respBodyInterpol);
+                jsons.push(respBodyInterpol);           
+            //  respBodyMinPub = JSON.stringify(respBodyMinPub); // JSON.parse(jsons);
+             //  console.log(respBodyMinPub);
+          }
+        
+          // desde aqui min pub
+          try {
+          
+            const [response3, response4] = await axios.all([
+                axios.get('https://jsonplaceholder.typicode.com/usersXXX/3'),  // 
+                axios.get('https://jsonplaceholder.typicode.com/users/4') //  llamda ws min publico
+              ]); 
+                              
+           let obj3 = response3.data;  
+           let obj4 = response4.data;        
+        //  console.log(typeof response1.data) ;                          
+            jsons.push(obj3);
+            jsons.push(obj4);
+        
+            console.log("====2.1===");
+            //jsons.push(respBodyInterpol);//console.log(jsons);
+            return jsons; 
 
-            /*  console.log('"code": ', error.response.status);
+          } catch (error) {
+           
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
+            console.log("====2.2===");
+              var code =  error.response.status;  //  error.response.data.message)
+              var errorKey = "803-NOT_FOUND_MIN_PUB";
+              var message = "Error. El WS se encuentra Fuera de Línea. "+error.message;
+              var path = "https://jsonplaceholder.typicode.com/users";
+             
+              var respBodyMinPub = {
+                "code": code,
+                "errorKey": errorKey,
+                "message": message,
+                "path": path,
+                "submitTime": dateTime
+                } 
+                           
+            //    console.log(typeof respBodyMinPub) ;   // string
+               jsons.push(respBodyMinPub);
+              // console.log( jsons);   
+              // console.log(JSON.stringify(jsons));  //       console.log(JSON.parse(jsons));
+              
+             return jsons ;
+          }
+        };
+    //    https://exerror.com/unhandledpromiserejectionwarning-this-error-originated-either-by-throwing-inside-of-an-async-function-without-a-catch-block/
+    /*  console.log('"code": ', error.response.status);
               console.log('"errorKey": ', '"902-MIN_PUBLICO"');
               console.log('"message": ', "Error. El WS se encuentra Fuera de Línea. "+error.message);
                console.log('"path": '+ '"https://jsonplaceholder.typicode.com/users"');
                console.log('"submitTime": '+ '" ' + dateTime  + '"'  );*/
              // console.log(jsons);
               
-               console.log( jsons) ; 
-               console.log(JSON.stringify(jsons));  //               console.log(JSON.parse(jsons));
-              
-             return   jsons ;
-          }
-        };
-    //    https://exerror.com/unhandledpromiserejectionwarning-this-error-originated-either-by-throwing-inside-of-an-async-function-without-a-catch-block/
-    
 router.post('/create', function (req, res) {
     const ini_details = {
         par_tramite: req.body.par_tramite,
