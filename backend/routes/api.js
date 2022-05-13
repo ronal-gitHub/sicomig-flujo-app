@@ -175,7 +175,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
   
         try {
             const [response1, response2] = await axios.all([
-              axios.get('https://jsonplaceholder.typicode.com/users/XXX1'),  // llamda ws INTERPOL
+              axios.get('https://jsonplaceholder.typicode.com/users/1'),  // llamda ws INTERPOL
               axios.get('https://jsonplaceholder.typicode.com/users/2') //  
             ]); 
             // const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
@@ -202,7 +202,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
               
               console.log("====1.2===");
               var code = error.response.status;
-              var errorKey = "801-NOT_FOUND_INTERPOL:";
+              var errorKey = "801-NOT_FOUND_INTERPOL";
               var message = "Error. El WS se encuentra Fuera de Línea. "+ error.message;
               var path = "https://jsonplaceholder.typicode.com/users";
               
@@ -222,7 +222,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
           try {
           
             const [response3, response4] = await axios.all([
-                axios.get('https://jsonplaceholder.typicode.com/usersXXX/3'),  // 
+                axios.get('https://jsonplaceholder.typicode.com/usersXX/3'),  // 
                 axios.get('https://jsonplaceholder.typicode.com/users/4') //  llamda ws min publico
               ]); 
                               

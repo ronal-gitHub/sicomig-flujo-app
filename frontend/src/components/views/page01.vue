@@ -1,4 +1,4 @@
-<template if='rootElement && rootElement.prop'>
+<template>
   <div>
     <div class="flex xs11 lg12" style="padding-left: 10px; margin-left: auto; margin-right: auto; margin-bottom: 20px; width: 40%;">
       <va-card class="fill-height" style="overflow-x: auto;">
@@ -44,7 +44,10 @@
           <va-icon name="fa fa-search" slot="prepend" />
         </va-input>
         <div class="mb-4">
-          <va-notification style="margin-bottom: 20px;" v-show= "isHiddenMP">
+          <va-notification style="margin-bottom: 20px;" v-show= "isHiddenIP">
+            {{ $t(' Servicio INTERPOL INACTIVO  ') }}
+          </va-notification>
+            <va-notification style="margin-bottom: 20px;" v-show= "isHiddenMP">
             {{ $t(' Servicio Ministerio Publico INACTIVO  ') }}
           </va-notification>
         </div>
@@ -505,7 +508,7 @@ export default {
       addModal: false,
       verifyModal: false,
       invalidModal: false,
-      isHiddenMP: true,
+      isHiddenMP: false,
       isHiddenIP: false,
       searchContent01: [],
       searchContent02: [],
@@ -828,11 +831,31 @@ export default {
         .then((response) => {
           this.resultProducts = response.data;
           this.loading = false;
-          isHiddenMP =  response.data.errorKey;
-          console.log(isHiddenMP);
-            
+              //  console.log( response.data) ;
+            //   console.log( Object.values(Object.values(response.data)[1])[0]  ) ;
+          var array = response.data;
+           
+            if(array.length >1){
+              array = array[array.length-1].filter( record => record.errorKey);
+              console.log(array);
+             // console.log(Object.values(array).some(code => code.errorKey.includes ("NOT_FOUND_INTERPOL")));
+            if(array.some(code => code.errorKey.includes ("NOT_FOUND_INTERPOL"))){
+                     this.isHiddenIP =  true; //response.data.errorKey;
+              }else{
+                 this.isHiddenIP =  false;
+              }
+              //  console.log(Object.values(array).some(code => code.errorKey.includes ("NOT_FOUND_MIN_PUB")));
+            if(array.some(code => code.errorKey.includes ("NOT_FOUND_MIN_PUB"))){
+               this.isHiddenMP =  true; 
+              } else{
+                 this.isHiddenMP =  false;
+              }                    
+              
+            }
+        
         })
         .catch((error) => {
+            console.log(error.message);
           this.loading = false;
           })
     },
@@ -888,7 +911,7 @@ export default {
       this.reqDel = {
         id: this.ind,
       };
-      console.log(this.reqDel.id);
+   
       axios
         .post("/del_id",this.reqDel, {
           headers: { Authorization: localStorage.token } 
@@ -907,7 +930,7 @@ export default {
     },
     result1() { // para mostrar los tabs
       this.products = this.resultProducts.filter(item => item.par_tramite == "1");
-      this.searchedProducts = this.products;
+      this.searchedProducts = this.products;     
     },
     result2() {
       this.products = this.resultProducts.filter(item => item.par_tramite == "2");
