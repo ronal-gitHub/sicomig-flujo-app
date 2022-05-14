@@ -105,6 +105,11 @@ router.get('/flujoXX', function (req, res) {
 
 router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
   try { //  The variable that received the HTTP data had to use the await keyword to ensure the asynchronous data was received before continuing
+    var token = getToken(req.headers);
+
+     if (token) {
+      // Verify the token using jwt.verify method
+      const decode =   jwt.verify(token, 'nodeauthsecret');
 
     const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
      
@@ -161,7 +166,9 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
         results.push(wsExterno);
     
        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
-
+      } else {
+         return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+     }
      }catch (error) {
        console.log("===2====");
        console.log((res.json({error:error.message})));
@@ -354,7 +361,7 @@ router.post('/del_id', function (req, res) {
 });
 
 router.post('/check_token/', function (req, res) {
-    console.log("=======");
+    console.log("====tk===");
     //console.log(req.headers);
     var token = getToken(req.headers);
     if (token) {
