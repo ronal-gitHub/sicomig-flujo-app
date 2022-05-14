@@ -76,8 +76,8 @@ export default {
       this.showPassword = !this.showPassword;
     },
     onsubmit () {
-      this.usernameErrors = this.username ? [] : ['Username is required']
-      this.passwordErrors = this.password ? [] : ['Password is required']
+      this.usernameErrors = this.username ? [] : ['Usuario es requerido']
+      this.passwordErrors = this.password ? [] : ['Password  es requerido']
       if (!this.formReady) {
         return
       }
@@ -85,13 +85,14 @@ export default {
           .post('/signin', {username: this.username, password: this.password})
           .then((response) => {
             if (response.data.invalid === 1) {
-              alert('Invalid Credentials.')
+              alert(' Credenciales Invalidas.')
               localStorage.removeItem('token')
             }
             else {
-              console.log(response.data.email.slice(0, response.data.email.indexOf('@')))
+              console.log('aqui ',response.data.login.slice(0, response.data.login.indexOf('@')))
               localStorage.token = response.data.token
-              localStorage.uid = response.data.email.slice(0, response.data.email.indexOf('@'))
+              localStorage.uid = response.data.login
+              //response.data.email.slice(0, response.data.email.indexOf('@'))
               this.$router.replace('/admin/page01')
             }
           })

@@ -1,17 +1,27 @@
 'use strict';
 var bcrypt = require('bcrypt-nodejs');
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('Users', {
-    username: DataTypes.STRING,
-    password: DataTypes.STRING
+  const User = sequelize.define('usuario', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+  },  
+    login: DataTypes.STRING,
+    password_hash: DataTypes.STRING,
+    nombres: DataTypes.STRING,
+    apellidos: DataTypes.STRING,
+    email: DataTypes.STRING,
+    reset_key: DataTypes.STRING,
+    puesto_id:DataTypes.INTEGER            ,
   }, {schema: 'dgm_scg_test',});
   User.beforeSave((user, options) => {
-    if (user.changed('password')) {
-      user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
+  //  console.log(user.changed('password_hash'));
+    if (user.changed('password_hash')) {
+      user.password_hash = bcrypt.hashSync(user.password_hash, bcrypt.genSaltSync(10), null);
     }
   });
   User.prototype.comparePassword = function (passw, cb) {
-    bcrypt.compare(passw, this.password, function (err, isMatch) {
+    bcrypt.compare(passw, this.password_hash, function (err, isMatch) {
       if (err) {
         return cb(err);
       }

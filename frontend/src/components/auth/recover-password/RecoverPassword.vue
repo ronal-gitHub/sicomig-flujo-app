@@ -27,7 +27,7 @@ export default {
   methods: {
     onsubmit () {
       if (!this.email) {
-        this.emailErrors = ['Email is required']
+        this.emailErrors = ['Email es requerido']
       } else {
         this.$router.push('/')
       }

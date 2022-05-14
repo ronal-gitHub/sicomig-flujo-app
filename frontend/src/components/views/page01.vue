@@ -824,7 +824,8 @@ export default {
             nomApellidos: this.searchGenContent02 + this.searchGenContent03,
             nombres: this.searchGenContent02,
             apellidos: this.searchGenContent03,
-            fechaNac: this.searchGenContent04
+            fechaNac: this.searchGenContent04,
+            login:localStorage.uid
           },
           headers: { Authorization: localStorage.token }
         })

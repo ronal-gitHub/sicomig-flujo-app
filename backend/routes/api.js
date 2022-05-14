@@ -8,7 +8,7 @@ const passport = require('passport');
 const router = express.Router();
 // require('../config/passport')(passport);
 // rbc const Product = require('../models').Products; //rbc se cambio por tramites
-const User = require('../models').Users;
+const User = require('../models').usuario;
 const DetailDB = require('../models').inf_tramite;
 //const DetailDB2 = require('../models').sync_log;
 //onst Sequelize = require('sequelize'); 
@@ -21,8 +21,13 @@ router.post('/signup', function (req, res) {
     } else {
         User
             .create({
-                username: req.body.username,
-                password: req.body.password
+                login: req.body.username,
+                password_hash: req.body.password,
+                nombres: req.body.nombres,
+                apellidos: req.body.apellidos,
+                email: req.body.email,
+                reset_key:req.body.reset_key,
+                puesto_id: req.body.puesto_id
             })
             .then((user) => res.status(201).send(user))
             .catch((error) => {
@@ -37,7 +42,7 @@ router.post('/signin', function (req, res) {
     User
         .findOne({
             where: {
-                username: req.body.username
+                login: req.body.username
             }
         })
         .then((user) => {
@@ -52,7 +57,7 @@ router.post('/signin', function (req, res) {
                     jwt.verify(token, 'nodeauthsecret', function (err, data) {
                         console.log(err, data);
                     })
-                    res.json({ success: true, token: 'JWT ' + token, email: req.body.username });
+                    res.json({ success: true, token: 'JWT ' + token, login: req.body.username , id:  user.id});
                 } else {
                     res.status(401).send({ success: false, msg:  'Autenticacion fallo. Password incorrrecto' });
                 }
@@ -104,8 +109,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
     const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
      
       // Use raw SQL queries to select all rows which belongs to the tramite_inf
-      //console.log(req.query.nroDoc);
-      console.log(req.url);  // [results, metadata]
+     // console.log(req.url);  // [results, metadata]
    
       const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
             "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
@@ -131,14 +135,20 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "         WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+    
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') )	 "+
-            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  "+
-            "           )  "+
-            "    SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,fecha_exp, "+ 
-            "    fecha_emi, lugar_emision, estado, observacion FROM  inf_tram_conbinado ORDER BY numero_doc DESC   LIMIT 100  ",         
-          {
+            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) ),  "+
+            "   usu_roles_conbinado AS (          "+
+            "   SELECT rol.usuario_id, rol.modulo_sigla , tipo.codigo  FROM  dgm_scg_test.usuario usu, dgm_scg_test.modulo_tipo tipo ,dgm_scg_test.usuario_rol rol  "+
+            "    where    usu.login = :login :: text and usu.id = rol.usuario_id and tipo.sigla = rol.modulo_sigla  and  usu.status = 'ACTIVO'    )  "+
+            " SELECT mo.modulo_sigla,   numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac,   "+
+            "       tipo_doc,fecha_exp, fecha_emi, lugar_emision, estado, observacion     "+
+            "   FROM  inf_tram_conbinado inf , usu_roles_conbinado mo      "+
+            "   WHERE   inf.par_tramite =   mo.codigo     "+
+            "   ORDER BY numero_doc DESC   LIMIT 100  ",         
+      
+            {
               replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
                 ,nombres:  req.query.nombres, apellidos: req.query.apellidos  
-                ,fecha_nac:  req.query.fechaNac , gestion_reg:  req.query.gestionReg               
+                ,fecha_nac:  req.query.fechaNac , gestion_reg:  req.query.gestionReg ,login:  req.query.login              
             },
               type: DetailDB.sequelize.QueryTypes.SELECT
           });  // bind: {status}
@@ -176,7 +186,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
         try {
             const [response1, response2] = await axios.all([
               axios.get('https://jsonplaceholder.typicode.com/users/1'),  // llamda ws INTERPOL
-              axios.get('https://jsonplaceholder.typicode.com/users/2') //  
+              axios.get('https://jsonplaceholder.typicode.com/users/2XXXX') //  
             ]); 
             // const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
              //  console.log(response2.data.url); //console.log('Date in Response header:', headerDate);
@@ -265,13 +275,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
           }
         };
     //    https://exerror.com/unhandledpromiserejectionwarning-this-error-originated-either-by-throwing-inside-of-an-async-function-without-a-catch-block/
-    /*  console.log('"code": ', error.response.status);
-              console.log('"errorKey": ', '"902-MIN_PUBLICO"');
-              console.log('"message": ', "Error. El WS se encuentra Fuera de Línea. "+error.message);
-               console.log('"path": '+ '"https://jsonplaceholder.typicode.com/users"');
-               console.log('"submitTime": '+ '" ' + dateTime  + '"'  );*/
-             // console.log(jsons);
-              
+ 
 router.post('/create', function (req, res) {
     const ini_details = {
         par_tramite: req.body.par_tramite,
@@ -351,7 +355,7 @@ router.post('/del_id', function (req, res) {
 
 router.post('/check_token/', function (req, res) {
     console.log("=======");
-    console.log(req.headers);
+    //console.log(req.headers);
     var token = getToken(req.headers);
     if (token) {
         res.json({ success: true, token: 'JWT ' + token, username: req.body.username });
