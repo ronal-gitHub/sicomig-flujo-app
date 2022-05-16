@@ -163,7 +163,7 @@
             </div>
             <div class="flex xs12 md2">
               <va-select
-                :label="$t('FECHA VENCIMIENTO')"
+                :label="$t('FECHA EXP')"
                 v-model="searchContent09"
                 multiple
                 :options="options09"
@@ -241,7 +241,7 @@
               {{ isDateTime(props.rowData.fecha_emi) }}
             </template>
 
-            <template slot="Fecha Vencimiento" slot-scope="props">
+            <template slot="Fecha Exp" slot-scope="props">
               {{ isDateTime(props.rowData.fecha_ven) }}
             </template>
 
@@ -387,7 +387,7 @@
                 <div class="flex lg12">
                   <va-input
                     v-model="values09"
-                    label="FECHA VENCIMEINTO"
+                    label="FECHA EXP."
                   >
                     <va-icon
                       slot="prepend"
@@ -581,13 +581,13 @@ export default {
 
       json: {
         head: [
-                "ID", "PAR TRAMITE", "NOMBRES Y APELLIDOS","FECHA DE NACIMIENTO",
+                "ID TRAM", "FLUJO", "NOMBRES Y APELLIDOS","FECHA DE NACIMIENTO",
                 "NÚMERO DE DOCUMENTO", "TIPO DOCUMENTO", "PAÍS NACIONALIDAD",
-                "NÚMERO DE SERIE", "FECHA EMISIÓN", "FECHA VENCIMIENTO",
+                "NÚMERO DE SERIE", "FECHA EMISIÓN", "FECHA EXP",
                 "LUGAR EMISIÓN", "ESTADO", "OBSERVACIÓN",
-                "CREATEDAT", "FECHA REG"
+                "FECHA REG","PAR TRAMITE"
               ],
-        fileName: "ReportData.xls"
+        fileName: "Reporte_flujo_" + moment().format("DD/MM/YYYY HH:mm:ss").toString() + ".xls"
       },
 
       searchDateTime: ''
@@ -637,8 +637,8 @@ export default {
           // width: "15%",
         },
         {
-          name: "__slot:Fecha Vencimiento",
-          title: "FECHA VENCIMIENTO",
+          name: "__slot:Fecha Exp",
+          title: "FECHA EXP..",
           // width: "15%",
         },
         {
@@ -978,12 +978,12 @@ export default {
     exportPDF() {
       var source =  this.$refs["article"];
         let rows = [];
-        let columnHeader = ['ID', 'PAR TRAMITE', 'NOMBRES Y APELLIDOS', 'FECHA DE NACIMIENTO', 'NUMERO DE DOCUMENTO', 'TIPO DOCUMENTO', 'PAIS NACIONALIDAD', 'NUMERO DE SERIE', 'FECHA EMISION', 'FECHA VENCIMIENTO', 'LUGAR EMISION', 'ESTADO', 'OBSERVACION', 'CREATEDAT', 'FECHA REG'];
-        let pdfName = 'Schedule';
+        let columnHeader = ['ID TRAM', 'FLUJO', 'NOMBRES Y APELLIDOS', 'FECHA DE NACIMIENTO', 'NUMERO DE DOCUMENTO', 'TIPO DOCUMENTO', 'PAIS NACIONALIDAD', 'NUMERO DE SERIE', 'FECHA EMISION', 'FECHA EXP', 'LUGAR EMISION', 'ESTADO', 'OBSERVACION', 'FECHA REG', 'PAR TRAMITE'];
+        let pdfName = ' "Reporte_flujo';
         source.data.forEach(element => {
             var temp = [
                 element.id_tramite,
-                element.tipo_bus,
+                element.modulo_sigla,
                 element.nombres_apellidos,
                 this.isDate(element.fecha_nac),
                 element.numero_doc,
@@ -995,8 +995,8 @@ export default {
                 element.lugar_emi,
                 element.estado,
                 element.observacion,
-                this.isDateTime(element.createdAt),
                 this.isDateTime(element.fecha_Reg),
+                element.par_tramite,
             ];
             rows.push(temp);
         });
@@ -1014,7 +1014,7 @@ export default {
         doc.text("Fecha y hora de busqueda : " + this.searchDateTime, 420, 90 );
         doc.text("Fecha y hora de impresion : " + moment().format("DD/MM/YYYY HH:mm:ss").toString(), 420, 100 );
         doc.autoTable(columnHeader, rows, { startY: 120, styles: {fontSize: 11} });
-        doc.save(pdfName + '.pdf');
+        doc.save(pdfName+'_'+moment().format("DD/MM/YYYY HH:mm:ss").toString() + '.pdf');
     },
 
     isDate(data) {

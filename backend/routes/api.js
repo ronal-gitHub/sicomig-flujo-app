@@ -23,11 +23,11 @@ router.post('/signup', function (req, res) {
             .create({
                 login: req.body.username,
                 password_hash: req.body.password,
-                nombres: req.body.nombres,
-                apellidos: req.body.apellidos,
-                email: req.body.email,
-                reset_key:req.body.reset_key,
-                puesto_id: req.body.puesto_id
+                nombres: '', //req.body.nombres,
+                apellidos: '', //req.body.apellidos,
+                email: '', //req.body.email,
+                reset_key: 'false' , //req.body.reset_key,
+                puesto_id: 0  // req.body.puesto_id
             })
             .then((user) => res.status(201).send(user))
             .catch((error) => {
@@ -118,24 +118,24 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
    
       const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
             "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
-            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion , fecha_reg 	 "+
             "       FROM dgm_scg_test.inf_tramite inf  "+
             "                WHERE ( numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%' 	 "+
             "AND (nombres_apellidos iLIKE  '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), nombres_apellidos) || '%' ) 	 "+
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), apellidos) || '%' ) 	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
             "AND Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  	 "+
-            "       UNION   "+
+            "   UNION   "+
             "           SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc, 	 "+
-            "       fecha_exp, fecha_emi, lugar_emision, estado, observacion   "+
+            "       fecha_exp, fecha_emi, lugar_emision, estado, observacion, fecha_reg    "+
             "         FROM dgm_scg_test.inf_tramite inf 	 "+
             "WHERE numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+          
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), 'x') || '%'  AND apellidos   iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
             "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)           "+
-            "         UNION 	 "+
+            "   UNION 	 "+
             "        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
-            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	 "+
+            "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	, fecha_reg   "+
             "       FROM dgm_scg_test.inf_tramite inf   "+
             "         WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+    
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
@@ -144,8 +144,8 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "   usu_roles_conbinado AS (          "+
             "   SELECT rol.usuario_id, rol.modulo_sigla , tipo.codigo  FROM  dgm_scg_test.usuario usu, dgm_scg_test.modulo_tipo tipo ,dgm_scg_test.usuario_rol rol  "+
             "    where    usu.login = :login :: text and usu.id = rol.usuario_id and tipo.sigla = rol.modulo_sigla  and  usu.status = 'ACTIVO'    )  "+
-            " SELECT mo.modulo_sigla,   numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac,   "+
-            "       tipo_doc,fecha_exp, fecha_emi, lugar_emision, estado, observacion     "+
+            " SELECT id_tramite,mo.modulo_sigla,   nombres_apellidos, fecha_nac, numero_doc,       tipo_doc, pais_nac, serie, fecha_emi, "+
+            "   fecha_exp, lugar_emision,  estado, observacion, fecha_reg  , par_tramite         "+
             "   FROM  inf_tram_conbinado inf , usu_roles_conbinado mo      "+
             "   WHERE   inf.par_tramite =   mo.codigo     "+
             "   ORDER BY numero_doc DESC   LIMIT 100  ",         

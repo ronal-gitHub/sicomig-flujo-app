@@ -43,6 +43,7 @@
 
     <div class="py-2 d-flex justify--center mt-3">
       <va-button type="submit" class="my-0" style="width: 100%;">{{ $t('auth.login') }}</va-button>
+  
     </div>
   </form>
 </template>
@@ -85,7 +86,7 @@ export default {
           .post('/signin', {username: this.username, password: this.password})
           .then((response) => {
             if (response.data.invalid === 1) {
-              alert(' Credenciales Invalidas.')
+              alert(' Credenciales Invalidas....')
               localStorage.removeItem('token')
             }
             else {
@@ -96,6 +97,26 @@ export default {
               this.$router.replace('/admin/page01')
             }
           })
+
+           .catch(function (error) {
+              if (error.response) {
+                 alert(' Credenciales Invalidas.')
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+              }
+              console.log(error.config);
+            })
     },
     check_token : function () {
       const ddd = {

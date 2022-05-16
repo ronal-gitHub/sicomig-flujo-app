@@ -4,9 +4,10 @@
     <va-input
       class="py-2"
       v-model="email"
-      type="email"
-      :error="!!emailErrors.length"
-      :error-messages="emailErrors"
+      type="text"
+      placeholder="Please enter your login here"
+      :error="!!errors.length"
+      :error-messages="errors"
     />
 
     <label>Contraseña *</label>
@@ -57,7 +58,7 @@ export default {
       email: '',
       password: '',
       agreedToTerms: false,
-      emailErrors: [],
+      errors: [],
       passwordErrors: [],
       agreedToTermsErrors: [],
       showPassword: true,
@@ -68,7 +69,7 @@ export default {
       this.showPassword = !this.showPassword;
     },
     onsubmit () {
-      this.emailErrors = this.email ? [] : ['Email is required']
+      this.errors = this.email ? [] : ['Usuario is required']
       this.passwordErrors = this.password ? [] : ['Password is required']
       if (!this.formReady) {
         return
@@ -77,7 +78,7 @@ export default {
         .post('/signup', {username: this.email, password: this.password})
         .then((response) => {
           if (response.data.invalid === 1) {
-            alert('Invalid Credentials.')
+            alert('Credenciales invalidas.')
             localStorage.removeItem('token')
           }
           else {
@@ -91,7 +92,8 @@ export default {
   },
   computed: {
     formReady () {
-      return !(this.emailErrors.length || this.passwordErrors.length)
+      console.log(this.errors.length   )
+      return !(this.errors.length || this.passwordErrors.length)
     },
   },
 }

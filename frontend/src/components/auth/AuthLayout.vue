@@ -8,7 +8,7 @@
             center
           >
             <va-tab>{{ $t('auth.login') }}</va-tab>
-            <va-tab>{{ $t('Sign up') }}</va-tab>
+            <va-tab>{{ $t('Registro') }}</va-tab>
           </va-tabs>
 
           <va-separator/>
