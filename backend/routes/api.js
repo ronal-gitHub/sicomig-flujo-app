@@ -23,11 +23,13 @@ router.post('/signup', function (req, res) {
             .create({
                 login: req.body.username,
                 password_hash: req.body.password,
-                nombres: '', //req.body.nombres,
-                apellidos: '', //req.body.apellidos,
-                email: '', //req.body.email,
+                nombres: req.body.nombres,
+                apellidos: req.body.apellidos,
+                email: req.body.email,
                 reset_key: 'false' , //req.body.reset_key,
-                puesto_id: 0  // req.body.puesto_id
+                puesto_id: req.body.puesto_id,
+                reset_key: 'false' ,
+                transaccion: 'CREAR'               
             })
             .then((user) => res.status(201).send(user))
             .catch((error) => {
@@ -159,10 +161,9 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
           });  // bind: {status}
 
           console.log("===**+**====");     
-         // console.log(typeof wsExterno) ; // object 
-         // console.log(wsExterno);
+         // console.log(typeof wsExterno) ; //  console.log(wsExterno);
           console.log(typeof results) ; 
-          console.log(results);
+         // console.log(results);
         results.push(wsExterno);
     
        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
