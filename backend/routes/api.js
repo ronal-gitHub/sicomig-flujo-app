@@ -5,13 +5,13 @@ const express = require('express');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const { now } = require('moment');
 const router = express.Router();
 // require('../config/passport')(passport);
 // rbc const Product = require('../models').Products; //rbc se cambio por tramites
 const User = require('../models').usuario;
 const DetailDB = require('../models').inf_tramite;
-//const DetailDB2 = require('../models').sync_log;
-//onst Sequelize = require('sequelize'); 
+const Even_log = require('../models').event_log;
 
 
 
@@ -30,13 +30,25 @@ router.post('/signup', function (req, res) {
                 puesto_id: req.body.puesto_id,
                 reset_key: 'false' ,
                 transaccion: 'CREAR'               
-            })
+            }, { //logging: console.log,
+                // If plain is true, then sequelize will only return the first
+                // record of the result set. In case of false it will return all records.
+                plain: false,
+                // Set this to true if you don't have a model definition for your query.
+                raw: false,
+                logging: (sql, queryObject) => {                 
+                 //console.log("<<<<<<<<"+ queryObject)// do your own logging
+                 insertLog(sql,req)
+                  }})
             .then((user) => res.status(201).send(user))
             .catch((error) => {
                 console.log(error);
-                // console.log("<<<<<<<<")
+               
                 res.status(400).send(error);
             });
+            console.log("===console====");
+            //User.console.log;   {logging: console.log}
+    
     }
 });
 
@@ -69,41 +81,6 @@ router.post('/signin', function (req, res) {
 });
 
 
-// Endpoint Consulta flujos migratorios desde la tabla inf_tramite
-router.get('/flujoXX', function (req, res) {
-    console.log("=======");
-    console.log(req.url);
-    console.log("=======");
-   // console.log(req.query.nroDoc);
-    // var token = getToken(req.headers);
-    // if (token) {
-      
-      DetailDB
-            .findAll({             
-            })
-            .then((tramites) => { // rbc era prods
-                var temp = tramites.filter(item =>  item.numero_doc.toString().includes(req.query.nroDoc.toString())
-                    && (item.nombres_apellidos.toString().toLowerCase().includes(req.query.nombres.toString().toLowerCase()) 
-                    && item.nombres_apellidos.toLowerCase().includes(req.query.apellidos.toString().toLowerCase()))
-                    && moment(item.fecha_nac).format('DD/MM/YYYY').toString().includes(req.query.fechaNac.toString())
-                );
-                    console.log( JSON.stringify(tramites));     //
-     //   console.log(tramites);                   
-             
-                if(req.query.gestionReg == 'TODOS')
-                    res.status(200).send(temp);
-                else
-                    res.status(200).send(temp.filter(item => req.query.fechaReg.toString().includes(item.fecha_reg.getFullYear().toString())));
-            })
-            .catch((error) => {
-                 res.status(400).send(error);
-              });
-    // } else {
-    //     return res.status(403).send({ success: false, msg: 'Unauthorized.' });
-    // }
- // });
-});
-
 
 router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
   try { //  The variable that received the HTTP data had to use the await keyword to ensure the asynchronous data was received before continuing
@@ -111,14 +88,14 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
 
      if (token) {
       // Verify the token using jwt.verify method
-      const decode =   jwt.verify(token, 'nodeauthsecret');
+         const decode =   jwt.verify(token, 'nodeauthsecret');
 
-    const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
+         const wsExterno ='';// await    wsExternos(); // llamda a ws wxternos ej INTERPOL
      
       // Use raw SQL queries to select all rows which belongs to the tramite_inf
      // console.log(req.url);  // [results, metadata]
    
-      const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
+         const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
             "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
             "         fecha_exp, fecha_emi, lugar_emision, estado, observacion , fecha_reg 	 "+
             "       FROM dgm_scg_test.inf_tramite inf  "+
@@ -163,7 +140,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
           console.log("===**+**====");     
          // console.log(typeof wsExterno) ; //  console.log(wsExterno);
           console.log(typeof results) ; 
-         // console.log(results);
+        
         results.push(wsExterno);
     
        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
@@ -177,14 +154,50 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
       }
 
     });
-    //    const numero_doc = results.map(elm => elm.numero_doc);
-      // const resultsMap = new Map();
-     //  results.forEach(message => resultsMap.set(results.numero_doc, message));
-
-      /*this.body = messages.map(function(user) {
-       const obj = user.toJSON();
-       obj.recentMessage = messagesMap.get(obj.id);
-       return obj;*/
+    
+const insertLog = async (qry,req) => {
+    
+    try {
+        var today = new Date();
+        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        if (!qry) {
+           console.log( 'Param qry is null' )
+        } else {
+           
+           const records  =   await User.sequelize.query(
+                "SELECT id FROM dgm_scg_test.usuario WHERE login = $login ",
+                {
+                  bind: { login: req.body.username },
+                  type: User.sequelize.QueryTypes.SELECT
+                }
+              );
+            Even_log
+                .create({
+                    fte_inf_sigla : 'DIGEMIG',
+                    usuario_id : (records[0].id),// req.body.usuario_id,
+                    start_date :  date+' '+time,
+                    end_date :   new Date(),
+                    //user_ip : DataTypes.STRING,
+                    user_role: 'ADM',
+                    descripcion :  'INSERCION EN LA TABLA USUARIOS',
+                    param_qry : 'fte_inf_sigla : DIGEMIG'+'usuario_id : 1'+ ',start_date : '+  date+' '+time,//req.body,
+                    desc_qry : qry,
+                    transaccion: 'CREAR',
+                    usuario_creacion: req.body.username               
+                } )
+                .then((user) => {return 'true'})
+                .catch((error) => { 
+                    console.log(error);
+                     throw error                  
+                });
+                console.log("===console====");
+           
+        }
+    } catch (error) {
+                console.log(error)
+            }
+};
 
     const wsExternos = async (param1,param2) => {
         var respBodyMinPub= {};
