@@ -12,9 +12,8 @@ module.exports = (sequelize, DataTypes) => {
 	param_qry : DataTypes.STRING,
 	desc_qry : DataTypes.STRING,
 	transaccion : DataTypes.STRING,
-	//usuario_creacion varchar(30) NOT NULL DEFAULT "current_user"(),
-  },
-   {schema: 'dgm_scg_test',
+	usuario_creacion  : DataTypes.STRING
+  }, {schema: 'dgm_scg_test',
     tableName: 'event_log',
     
 });

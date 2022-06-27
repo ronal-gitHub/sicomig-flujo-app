@@ -38,7 +38,7 @@ router.post('/signup', function (req, res) {
                 raw: false,
                 logging: (sql, queryObject) => {                 
                  //console.log("<<<<<<<<"+ queryObject)// do your own logging
-                 insertLog(sql,req)
+                insertLogUser(sql,req)
                   }})
             .then((user) => res.status(201).send(user))
             .catch((error) => {
@@ -91,10 +91,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
          const decode =   jwt.verify(token, 'nodeauthsecret');
 
          const wsExterno ='';// await    wsExternos(); // llamda a ws wxternos ej INTERPOL
-     
-      // Use raw SQL queries to select all rows which belongs to the tramite_inf
-     // console.log(req.url);  // [results, metadata]
-   
+        
          const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
             "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
             "         fecha_exp, fecha_emi, lugar_emision, estado, observacion , fecha_reg 	 "+
@@ -128,22 +125,21 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "   FROM  inf_tram_conbinado inf , usu_roles_conbinado mo      "+
             "   WHERE   inf.par_tramite =   mo.codigo     "+
             "   ORDER BY numero_doc DESC   LIMIT 100  ",         
-      
             {
               replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
-                ,nombres:  req.query.nombres, apellidos: req.query.apellidos  
-                ,fecha_nac:  req.query.fechaNac , gestion_reg:  req.query.gestionReg ,login:  req.query.login              
+                ,nombres:  req.query.nombres, apellidos: req.query.apellidos   ,fecha_nac:  req.query.fechaNac 
+                , gestion_reg:  req.query.gestionReg ,login:  req.query.login              
             },
               type: DetailDB.sequelize.QueryTypes.SELECT
-          });  // bind: {status}
+          });  
+          insertLog (results[0],req);
 
-          console.log("===**+**====");     
-         // console.log(typeof wsExterno) ; //  console.log(wsExterno);
+          console.log("===end point flujo====");     // console.log(typeof wsExterno) ; //  console.log(wsExterno);
           console.log(typeof results) ; 
         
-        results.push(wsExterno);
-    
-       return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
+          results.push(wsExterno);    
+        return  res.status(200).send(results);    // res.json({ success: true, email: req.query.nroDoc });
+
       } else {
          return res.status(403).send({ success: false, msg: 'Unauthorized.' });
      }
@@ -155,8 +151,57 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
 
     });
     
-const insertLog = async (qry,req) => {
+    const insertLog = async (qry,req) => {
     
+        try {
+
+            if (!qry) {
+               console.log( 'Param qry is null' )
+            } else {
+               
+                const row  =   await User.sequelize.query(
+                    "SELECT id FROM dgm_scg_test.usuario WHERE login = $login ",
+                    {
+                      bind: { login: req.query.login },
+                      type: User.sequelize.QueryTypes.SELECT
+                    }
+                  );
+                  const records  =   await User.sequelize.query(
+                    "SELECT permiso_tipo_sigla FROM dgm_scg_test.usuario_rol WHERE usuario_id = $usuario_id ",
+                    {
+                      bind: { usuario_id: row[0].id },
+                      type: User.sequelize.QueryTypes.SELECT
+                    }
+                  );
+                Even_log
+                    .create({
+                        fte_inf_sigla : 'DIGEMIG',
+                        usuario_id : row[0].id,
+                        start_date :  date+' '+time,
+                        end_date :   new Date(),
+                        //user_ip : DataTypes.STRING,
+                        user_role: 'ADM',
+                        descripcion :  'LOG CONSULTA A LA TABLA INF_TRAMITE',
+                        param_qry : '{ nro_doc: '''+ req.query.nroDoc+  ',nom_apellidos:'+  req.query.nomApellidos +   ',nombres: '+ req.query.nombres +   ', apellidos:'+ req.query.apellidos  +   ', fecha_nac:'+  req.query.fechaNac + ',gestion_reg:'+  req.query.gestionReg +  ',login: '+ req.query.login +'}',  
+                        desc_qry : JSON. stringify(qry),
+                        transaccion: 'CREAR',
+                        usuario_creacion: req.query.login               
+                    } )
+                    .then((user) => {return 'true'})
+                    .catch((error) => { 
+                        console.log(error);
+                         throw error                  
+                    });
+                    console.log("===console====");
+               
+            }
+        } catch (error) {
+                    console.log(error)
+                }
+    };
+
+    
+const insertLogUser = async (qry,req) => {    
     try {
         var today = new Date();
         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -165,23 +210,30 @@ const insertLog = async (qry,req) => {
            console.log( 'Param qry is null' )
         } else {
            
-           const records  =   await User.sequelize.query(
+            const row  =   await User.sequelize.query(
                 "SELECT id FROM dgm_scg_test.usuario WHERE login = $login ",
                 {
                   bind: { login: req.body.username },
                   type: User.sequelize.QueryTypes.SELECT
                 }
               );
+              const records  =   await User.sequelize.query(
+                "SELECT permiso_tipo_sigla FROM dgm_scg_test.usuario_rol WHERE usuario_id = $usuario_id ",
+                {
+                  bind: { usuario_id: row[0].id },
+                  type: User.sequelize.QueryTypes.SELECT
+                }
+              );
             Even_log
                 .create({
                     fte_inf_sigla : 'DIGEMIG',
-                    usuario_id : (records[0].id),// req.body.usuario_id,
+                    usuario_id : row[0].id,
                     start_date :  date+' '+time,
                     end_date :   new Date(),
                     //user_ip : DataTypes.STRING,
                     user_role: 'ADM',
                     descripcion :  'INSERCION EN LA TABLA USUARIOS',
-                    param_qry : 'fte_inf_sigla : DIGEMIG'+'usuario_id : 1'+ ',start_date : '+  date+' '+time,//req.body,
+                    param_qry : '{username : '+ req.body.username +',usuario_id :'+ row[0].id + ',nombres : '+  req.body.nombres+ ',apellidos : '+  req.body.apellidos +  ', email: '+ req.body.email + ',reset_key :' + req.body.reset_key  +   ',puesto_id: '+  req.body.puesto_id  +'}',  
                     desc_qry : qry,
                     transaccion: 'CREAR',
                     usuario_creacion: req.body.username               
