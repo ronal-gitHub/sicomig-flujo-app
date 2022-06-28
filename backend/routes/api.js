@@ -67,8 +67,8 @@ router.post('/signin', function (req, res) {
             }
             user.comparePassword(req.body.password, (err, isMatch) => {
                 if (isMatch && !err) {
-                    var token = jwt.sign(JSON.parse(JSON.stringify(user)), 'nodeauthsecret', { expiresIn: 86400 * 30 });
-                    jwt.verify(token, 'nodeauthsecret', function (err, data) {
+                    var token = jwt.sign(JSON.parse(JSON.stringify(user)), 'nodeauthsecret', { expiresIn: 60 * 100 });
+                    jwt.verify(token, 'nodeauthsecret', function (err, data) { //86400
                         console.log(err, data);
                     })
                     res.json({ success: true, token: 'JWT ' + token, login: req.body.username , id:  user.id});
@@ -90,6 +90,10 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
       // Verify the token using jwt.verify method
          const decode =   jwt.verify(token, 'nodeauthsecret');
          const rol = await rol_sigla( req.query.login);
+         if(rol.substring(0,5)== 'error'){
+             console.log('Error no tiene el rol de consulta CON')
+            return res.json({'error' : rol});
+         }
          const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
         
          const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
@@ -134,7 +138,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
           });  
           insertLog (results[0],req);
 
-          console.log("===end point flujo====");     // console.log(typeof wsExterno) ; //  console.log(wsExterno);
+          console.log("=== ok endpoint flujo====");     // console.log(typeof wsExterno) ; //  console.log(wsExterno);
           console.log(typeof results) ; 
         
           results.push(wsExterno);    
@@ -144,9 +148,9 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
          return res.status(403).send({ success: false, msg: 'Unauthorized.' });
      }
      }catch (error) {
-       console.log("===2====");
-       console.log((res.json({error:error.message})));
-       return res.json({error:error.message});
+       console.log("===error in endpoint flujo====");
+       console.log((res.json({error: error.message})));
+       return res.json({error: error.message});
       }
 
     });
@@ -154,7 +158,6 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
     const rol_sigla = async (login) => {
     
         try {
-
             if (!login) {
                console.log( 'Param login is null' )
             } else {
@@ -184,7 +187,8 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
        
             }
         } catch (error) {
-                    console.log(error)
+                   // console.log(error)
+                    return 'error: El usuario no tiene el rol para consultar datos. ' + error
                 }
     };
 
@@ -300,18 +304,16 @@ const insertLogUser = async (qry,req) => {
         //  console.log(typeof response1.data) ;                
          
             jsons.push(obj1);
-            jsons.push(obj2);
-     
-            console.log("===1.1====");     // console.log(jsons);
+            jsons.push(obj2);     
+          
          //  respBodyInterpol = jsons; 
           } catch (error) {
-              
+            console.log("===Error en WS INTERPOL====");    
               var today = new Date();
               var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
               var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
               var dateTime = date+' '+time;
-              
-              console.log("====1.2===");
+    
               var code = error.response.status;
               var errorKey = "801-NOT_FOUND_INTERPOL";
               var message = "Error. El WS se encuentra Fuera de Línea. "+ error.message;
@@ -339,7 +341,7 @@ const insertLogUser = async (qry,req) => {
                               
            let obj3 = response3.data;  
            let obj4 = response4.data;        
-        //  console.log(typeof response1.data) ;                          
+                             
             jsons.push(obj3);
             jsons.push(obj4);
         
@@ -348,12 +350,12 @@ const insertLogUser = async (qry,req) => {
             return jsons; 
 
           } catch (error) {
-           
+            console.log("===Error en WS MIN PUB====");    
             var today = new Date();
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             var dateTime = date+' '+time;
-            console.log("====2.2===");
+          
               var code =  error.response.status;  //  error.response.data.message)
               var errorKey = "803-NOT_FOUND_MIN_PUB";
               var message = "Error. El WS se encuentra Fuera de Línea. "+error.message;
@@ -368,8 +370,7 @@ const insertLogUser = async (qry,req) => {
                 } 
                            
             //    console.log(typeof respBodyMinPub) ;   // string
-               jsons.push(respBodyMinPub);
-              // console.log( jsons);   
+               jsons.push(respBodyMinPub);          
               // console.log(JSON.stringify(jsons));  //       console.log(JSON.parse(jsons));
               
              return jsons ;

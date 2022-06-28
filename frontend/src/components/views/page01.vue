@@ -1154,6 +1154,7 @@ export default {
     }, 400),
 
     genSearch() {
+      
       if( !this.searchGenContent01 && !this.searchGenContent02 && !this.searchGenContent03 && !this.searchGenContent04 ) {
         this.verifyModal = true;
         return

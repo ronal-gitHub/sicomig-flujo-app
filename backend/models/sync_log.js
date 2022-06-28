@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const syn_log = sequelize.define('syn_log', {
+  const syn_log = sequelize.define('sync_log', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     fecha_reg: DataTypes.DATE
   },
    {schema: 'dgm_scg_test',
-    tableName: 'syn_log',
+    tableName: 'sync_log',
     
 });
   return syn_log;
