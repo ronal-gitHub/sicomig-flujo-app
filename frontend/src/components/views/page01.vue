@@ -75,13 +75,29 @@
           
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 1).length > 0 ? true:false" icon="entypo entypo-search" @click="result1()" style="background-color: #f03a24;">FLUJO</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 2).length > 0 ? true:false" icon="entypo entypo-search" @click="result2()" style="background-color: #f03a24;">PERMANENCIA</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 3).length > 0 ? true:false" icon="entypo entypo-search" @click="result3()" style="background-color: #f03a24;">NATURALIZACION</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 4).length > 0 ? true:false" icon="entypo entypo-search" @click="result4()" style="background-color: #f03a24;">VISA</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 5).length > 0 ? true:false" icon="entypo entypo-search" @click="result5()" style="background-color: #f03a24;">TRASPASO</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 6).length > 0 ? true:false" icon="entypo entypo-search" @click="result6()" style="background-color: #f03a24;">IMPEDIMENTO</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 7).length > 0 ? true:false" icon="entypo entypo-search" @click="result7()" style="background-color: #f03a24;">PASAPORTE</va-button>
+
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 8).length > 0 ? true:false" icon="entypo entypo-search" @click="result8()" style="background-color: #f03a24;">TRIPULANTE</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 9).length > 0 ? true:false" icon="entypo entypo-search" @click="result9()" style="background-color: #f03a24;">INVITACIONES</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 10).length > 0 ? true:false" icon="entypo entypo-search" @click="result10()" style="background-color: #f03a24;">TVF</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 11).length > 0 ? true:false" icon="entypo entypo-search" @click="result11()" style="background-color: #f03a24;">FLUJO_HISTORICO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 12).length > 0 ? true:false" icon="entypo entypo-search" @click="result12()" style="background-color: #f03a24;">CENSO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 13).length > 0 ? true:false" icon="entypo entypo-search" @click="result13()" style="background-color: #f03a24;">AUT_SALIDA</va-button>
+
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 14).length > 0 ? true:false" icon="entypo entypo-search" @click="result14()" style="background-color: #f03a24;">SALIDA OBL.</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 15).length > 0 ? true:false" icon="entypo entypo-search" @click="result15()" style="background-color: #f03a24;">FLUJO_LOCAL</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 16).length > 0 ? true:false" icon="entypo entypo-search" @click="result16()" style="background-color: #f03a24;">TRAM_ONLINE</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 17).length > 0 ? true:false" icon="entypo entypo-search" @click="result17()" style="background-color: #f03a24;">CONMINATORIA</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 18).length > 0 ? true:false" icon="entypo entypo-search" @click="result18()" style="background-color: #f03a24;">AMPLIACION</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 19).length > 0 ? true:false" icon="entypo entypo-search" @click="result19()" style="background-color: #f03a24;">PRO_INGRESO</va-button>
+
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 20).length > 0 ? true:false" icon="entypo entypo-search" @click="result20()" style="background-color: #f03a24;">ALERTA</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 21).length > 0 ? true:false" icon="entypo entypo-search" @click="result21()" style="background-color: #f03a24;">MIN.PUBLICO</va-button>
+            <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 22).length > 0 ? true:false" icon="entypo entypo-search" @click="result22()" style="background-color: #f03a24;">MEXICO</va-button>
             <va-button v-show= "this.resultProducts.filter(item => item.par_tramite == 23).length > 0 ? true:false" icon="entypo entypo-search" @click="result23()" style="background-color: #f03a24;">INTERPOL</va-button>
              
           </div>
@@ -835,11 +851,11 @@ export default {
               //  console.log( response.data) ;
             //   console.log( Object.values(Object.values(response.data)[1])[0]  ) ;
           var array = response.data;
-           
+           console.log(array);
             if(array.length >1){
+
               array = array[array.length-1].filter( record => record.errorKey);
-              console.log(array);
-             // console.log(Object.values(array).some(code => code.errorKey.includes ("NOT_FOUND_INTERPOL")));
+               // console.log(Object.values(array).some(code => code.errorKey.includes ("NOT_FOUND_INTERPOL")));
             if(array.some(code => code.errorKey.includes ("NOT_FOUND_INTERPOL"))){
                      this.isHiddenIP =  true; //response.data.errorKey;
               }else{
@@ -937,6 +953,10 @@ export default {
       this.products = this.resultProducts.filter(item => item.par_tramite == "2");
       this.searchedProducts = this.products;
     },
+        result3() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "3");
+      this.searchedProducts = this.products;
+    },
     result4() {
       this.products = this.resultProducts.filter(item => item.par_tramite == "4");
       this.searchedProducts = this.products;
@@ -953,16 +973,66 @@ export default {
       this.products = this.resultProducts.filter(item => item.par_tramite == "7");
       this.searchedProducts = this.products;
     },
+        result8() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "8");
+      this.searchedProducts = this.products;
+    },
+        result9() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "9");
+      this.searchedProducts = this.products;
+    },
+        result10() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "10");
+      this.searchedProducts = this.products;
+    },
+        result11() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "11");
+      this.searchedProducts = this.products;
+    },
+        result12() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "12");
+      this.searchedProducts = this.products;
+    },
+        result13() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "13");
+      this.searchedProducts = this.products;
+    },
       result14() { // para mostrar los tabs
       this.products = this.resultProducts.filter(item => item.par_tramite == "14");
       this.searchedProducts = this.products;
     },
+        result15() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "15");
+      this.searchedProducts = this.products;
+    },
+        result16() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "16");
+      this.searchedProducts = this.products;
+    },
+        result17() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "17");
+      this.searchedProducts = this.products;
+    },
+        result18() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "18");
+      this.searchedProducts = this.products;
+    },
+        result19() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "19");
+      this.searchedProducts = this.products;
+    },
+
+
     result20() {
       this.products = this.resultProducts.filter(item => item.par_tramite == "20");
       this.searchedProducts = this.products;
     },
     result21() {
       this.products = this.resultProducts.filter(item => item.par_tramite == "21");
+      this.searchedProducts = this.products;
+    },
+        result22() {
+      this.products = this.resultProducts.filter(item => item.par_tramite == "22");
       this.searchedProducts = this.products;
     },
       result23() {

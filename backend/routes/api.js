@@ -89,8 +89,8 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
      if (token) {
       // Verify the token using jwt.verify method
          const decode =   jwt.verify(token, 'nodeauthsecret');
-
-         const wsExterno ='';// await    wsExternos(); // llamda a ws wxternos ej INTERPOL
+         const rol = await rol_sigla( req.query.login);
+         const wsExterno = await    wsExternos(); // llamda a ws wxternos ej INTERPOL
         
          const results = await DetailDB.sequelize.query(" WITH inf_tram_conbinado AS (  "+
             "     SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,	 "+
@@ -100,7 +100,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "AND (nombres_apellidos iLIKE  '%'||  COALESCE(NULLIF(:nom_apellidos :: text, ''), nombres_apellidos) || '%' ) 	 "+
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), apellidos) || '%' ) 	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
-            "AND Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)  	 "+
+            "AND (Extract(year FROM fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) OR (fecha_reg is null  AND   :gestion_reg = 'TODOS' )) 	 "+
             "   UNION   "+
             "           SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc, 	 "+
             "       fecha_exp, fecha_emi, lugar_emision, estado, observacion, fecha_reg    "+
@@ -108,7 +108,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "WHERE numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+          
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), 'x') || '%'  AND apellidos   iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') ) 	 "+
-            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text)           "+
+            "AND (Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) OR (fecha_reg is null  AND   :gestion_reg = 'TODOS' ))          "+
             "   UNION 	 "+
             "        SELECT numero_doc, nombres_apellidos, nombres,apellidos, fecha_nac, par_tramite, id_tramite, serie, pais_nac, tipo_doc,  "+
             "         fecha_exp, fecha_emi, lugar_emision, estado, observacion 	, fecha_reg   "+
@@ -116,10 +116,10 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             "         WHERE  numero_doc iLIKE '%'||  COALESCE(NULLIF(:nro_doc :: text, ''), numero_doc) || '%'  	 "+    
             "AND nombres iLIKE '%'||  COALESCE(NULLIF(:nombres :: text, ''), nombres) || '%'  AND  apellidos iLIKE '%'||  COALESCE(NULLIF(:apellidos :: text, ''), 'x') || '%'  	 "+
             "AND   TO_CHAR(fecha_nac, 'DD/MM/YYYY') = COALESCE(NULLIF(:fecha_nac :: text, ''), TO_CHAR(fecha_nac, 'DD/MM/YYYY') )	 "+
-            "AND Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) ),  "+
+            "AND (Extract(year from fecha_reg) ::text = COALESCE(NULLIF(:gestion_reg :: text, 'TODOS'), Extract(year FROM fecha_reg)::text) OR (fecha_reg is null  AND   :gestion_reg = 'TODOS' )) ),  "+
             "   usu_roles_conbinado AS (          "+
             "   SELECT rol.usuario_id, rol.modulo_sigla , tipo.codigo  FROM  dgm_scg_test.usuario usu, dgm_scg_test.modulo_tipo tipo ,dgm_scg_test.usuario_rol rol  "+
-            "    where    usu.login = :login :: text and usu.id = rol.usuario_id and tipo.sigla = rol.modulo_sigla  and  usu.status = 'ACTIVO'    )  "+
+            "    where    usu.login = :login :: text and usu.id = rol.usuario_id and tipo.sigla = rol.modulo_sigla  and  usu.status = 'ACTIVO' AND  rol.permiso_tipo_sigla = :rol :: text   )  "+
             " SELECT id_tramite,mo.modulo_sigla,   nombres_apellidos, fecha_nac, numero_doc,       tipo_doc, pais_nac, serie, fecha_emi, "+
             "   fecha_exp, lugar_emision,  estado, observacion, fecha_reg  , par_tramite         "+
             "   FROM  inf_tram_conbinado inf , usu_roles_conbinado mo      "+
@@ -128,7 +128,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
             {
               replacements: { nro_doc:  req.query.nroDoc , nom_apellidos:  req.query.nomApellidos    
                 ,nombres:  req.query.nombres, apellidos: req.query.apellidos   ,fecha_nac:  req.query.fechaNac 
-                , gestion_reg:  req.query.gestionReg ,login:  req.query.login              
+                , gestion_reg:  req.query.gestionReg ,login:  req.query.login ,rol: rol              
             },
               type: DetailDB.sequelize.QueryTypes.SELECT
           });  
@@ -151,10 +151,50 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
 
     });
     
-    const insertLog = async (qry,req) => {
+    const rol_sigla = async (login) => {
     
         try {
 
+            if (!login) {
+               console.log( 'Param login is null' )
+            } else {
+               
+                const row  =   await User.sequelize.query(
+                    "SELECT id FROM dgm_scg_test.usuario WHERE login = $login ",
+                    {
+                      bind: { login: login },
+                      type: User.sequelize.QueryTypes.SELECT
+                    }
+                  );
+                  const rec_rol_permiso  =   await User.sequelize.query(
+                    "SELECT permiso_tipo_sigla FROM dgm_scg_test.usuario_rol WHERE usuario_id = $usuario_id AND permiso_tipo_sigla = 'CON' ",
+                    {
+                      bind: { usuario_id: row[0].id },
+                      type: User.sequelize.QueryTypes.SELECT
+                    }
+                  );
+                  const rec_permiso  =   await User.sequelize.query(
+                    "SELECT sigla, sigla_padre FROM dgm_scg_test.permiso_tipo WHERE sigla_padre = $sigla_padre ",
+                    {
+                      bind: { sigla_padre: rec_rol_permiso[0].permiso_tipo_sigla },
+                      type: User.sequelize.QueryTypes.SELECT
+                    }
+                  );
+                return rec_permiso[0].sigla_padre
+       
+            }
+        } catch (error) {
+                    console.log(error)
+                }
+    };
+
+      
+    
+    const insertLog = async (qry,req) => {    
+        try {
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             if (!qry) {
                console.log( 'Param qry is null' )
             } else {
@@ -166,13 +206,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
                       type: User.sequelize.QueryTypes.SELECT
                     }
                   );
-                  const records  =   await User.sequelize.query(
-                    "SELECT permiso_tipo_sigla FROM dgm_scg_test.usuario_rol WHERE usuario_id = $usuario_id ",
-                    {
-                      bind: { usuario_id: row[0].id },
-                      type: User.sequelize.QueryTypes.SELECT
-                    }
-                  );
+                
                 Even_log
                     .create({
                         fte_inf_sigla : 'DIGEMIG',
@@ -182,7 +216,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
                         //user_ip : DataTypes.STRING,
                         user_role: 'ADM',
                         descripcion :  'LOG CONSULTA A LA TABLA INF_TRAMITE',
-                        param_qry : '{ nro_doc: '''+ req.query.nroDoc+  ',nom_apellidos:'+  req.query.nomApellidos +   ',nombres: '+ req.query.nombres +   ', apellidos:'+ req.query.apellidos  +   ', fecha_nac:'+  req.query.fechaNac + ',gestion_reg:'+  req.query.gestionReg +  ',login: '+ req.query.login +'}',  
+                        param_qry : '{ nro_doc: '+ req.query.nroDoc+  ',nom_apellidos:'+  req.query.nomApellidos +   ',nombres: '+ req.query.nombres +   ', apellidos:'+ req.query.apellidos  +   ', fecha_nac:'+  req.query.fechaNac + ',gestion_reg:'+  req.query.gestionReg +  ',login: '+ req.query.login +'}',  
                         desc_qry : JSON. stringify(qry),
                         transaccion: 'CREAR',
                         usuario_creacion: req.query.login               
@@ -217,13 +251,7 @@ const insertLogUser = async (qry,req) => {
                   type: User.sequelize.QueryTypes.SELECT
                 }
               );
-              const records  =   await User.sequelize.query(
-                "SELECT permiso_tipo_sigla FROM dgm_scg_test.usuario_rol WHERE usuario_id = $usuario_id ",
-                {
-                  bind: { usuario_id: row[0].id },
-                  type: User.sequelize.QueryTypes.SELECT
-                }
-              );
+         
             Even_log
                 .create({
                     fte_inf_sigla : 'DIGEMIG',
