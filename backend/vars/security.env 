@@ -1,0 +1,3 @@
+# Environment variables.
+STATUS=production
+#Development port

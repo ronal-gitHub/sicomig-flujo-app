@@ -240,7 +240,7 @@ router.get  ('/flujo', async function (req, res)   {  /// getAllFlujo
 
     
 const insertLogUser = async (qry,req) => {    
-    try {
+    try {//Servicio INTERPOL INACTIVO
         var today = new Date();
         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -291,7 +291,7 @@ const insertLogUser = async (qry,req) => {
         try {
             const [response1, response2] = await axios.all([
               axios.get('https://jsonplaceholder.typicode.com/users/1'),  // llamda ws INTERPOL
-              axios.get('https://jsonplaceholder.typicode.com/users/2XXXX') //  
+              axios.get('https://jsonplaceholder.typicode.com/users/2') //  
             ]); 
             // const headerDate = response1.headers && response1.headers.date ? response1.headers.date : 'no response date';
              //  console.log(response2.data.url); //console.log('Date in Response header:', headerDate);
