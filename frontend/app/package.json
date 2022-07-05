@@ -1,9 +1,9 @@
 {
   "name": "frontend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": false,
   "description": "Vue-Material frontend",
-  "author": "chellken, kim<marthaslee52457@gmail.com>",
+  "author": "rburgos, rbc<ronalburgos@gmail.com>",
   "scripts": {
     "serve": "vue-cli-service serve --port 80 --host 0.0.0.0",
     "build": "vue-cli-service build",
