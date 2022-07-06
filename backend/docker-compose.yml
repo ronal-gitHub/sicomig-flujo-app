@@ -1,54 +1,31 @@
-# We use '3' because it's the last version. https://codebeautify.org/yaml-parser-online
-version: '3.4'
- 
+version: '3.3'
+
 services:
-      
-  msflujomigback:
-    container_name: sicomig-msflujomig-back
-    #image: registry.gitlab.com/scg_consulta/sicomig-msflujomigbk:1.0.0-SNAPSHOT
+  backend: # front end container (running frontend project in nginx)
+      # container_name: backend
+      restart: always
+      build:         
+            context: ./app          
+      volumes:
+         - ./nginx.conf:/etc/nginx/nginx.conf # mount nginx configuration
+
+      environment:
+              NODE_ENV: development
+      ports:
+        - 5000:5000
+      networks:
+      - frontend_net
+
+  nginx: 
+    image: nginx:latest
+    container_name: production_nginx
     build:
-           context: ./nginx
-    env_file:
-      - vars/database.env
-   #   - vars/security.env
-    environment:
-      - APP_SLEEP=0
-      - LOGGING_FILE_NAME=/tmp/logs/msflujomigbk.log
-      - LOGGING_LEVEL_BO_COM_DIGEMIG_SICOMIG_MSFLUJOMIGBK=debug
-    # If you want to expose these ports outside your dev PC, remove the "127.0.0.1:" prefix
+            context: ./nginx
     ports:
-      - 8081:8081
-       
-  nodeserver:
-                build:
-                    context: ./app   # ./app  ./nginx
-                environment:
-                    NODE_ENV: development
-                ports:
-                    - "5000:5000"
-                 
-  nginx:
-            restart: always
-            build:
-                context: ./nginx
-            environment:
-                  NODE_ENV: development
-            ports:
-                - "80:80"
-            depends_on:
-              - msflujomigback
-  
-  
+      - 80:80  
+    networks:
+      - frontend_net
 
-      
-   # run the database and connect to it.
-#  docker-compose up 
-    # after running the above command it creates the container and image file in docker.
-    # import the file using docker, use the below commands.
-# docker container exec -i scg_database_1 psql -U postgres default_database < data.sql
-   # In the docker container command-line tool, to verify the imported sql file
- # sudo su -l postgres   
- #psql -U postgres -d default_database -- login into database
-#/dt -- to list all the tables in current database
-# SELECT * FROM usuarios; -- to show all the data or records in the table  
-
+networks:
+    frontend_net:
+        driver: bridge  
