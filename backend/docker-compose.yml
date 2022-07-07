@@ -18,7 +18,7 @@ services:
 
   nginx: 
     image: nginx:latest
-    container_name: production_nginx
+    container_name: nginx_back
     build:
             context: ./nginx
     ports:
