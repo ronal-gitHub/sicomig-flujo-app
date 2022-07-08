@@ -11,18 +11,18 @@ services:
       environment:
               NODE_ENV: development
       ports:
-        - 81:80 # mapping port
+        - 8086:80 # mapping port
       networks:
       - frontend_net
 
-  nginx:
+  nginx_fr:
     image: nginx:latest
     container_name: nginx_front
     restart: unless-stopped
     build:
             context: ./nginx
     ports:
-      - 8080:80
+      - 8085:80
     networks:
       - frontend_net
 

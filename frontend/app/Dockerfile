@@ -19,8 +19,8 @@ ENV NODE_ENV development
 COPY . . 
   #  COPY . /usr/src/app
 
-# our app is running on port 5000 within the container, so need to expose it. Expose port 5000. The app is running on port 5000 inside the container, so we can’t view it on our browser unless we expose the port
-EXPOSE 5000
+# our app is running on port 8086 within the container, so need to expose it. Expose port 8086. The app is running on port 8086 inside the container, so we can’t view it on our browser unless we expose the port
+EXPOSE 8086
 
 # the command that starts our app. Tell the image what command to run when the container is started
 CMD ["npm","run",  "serve"]

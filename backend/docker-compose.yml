@@ -12,19 +12,10 @@ services:
       environment:
               NODE_ENV: development
       ports:
-        - 5000:5000
+        - 8082:5000
       networks:
       - frontend_net
 
-  nginx: 
-    image: nginx:latest
-    container_name: nginx_back
-    build:
-            context: ./nginx
-    ports:
-      - 80:80  
-    networks:
-      - frontend_net
 
 networks:
     frontend_net:
